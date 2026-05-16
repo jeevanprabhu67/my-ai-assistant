@@ -70,45 +70,27 @@
             chatHistory.push({ role: "user", content: userText });
 
             try {
-                // Connecting to a clean, unrestricted public endpoint
-                const response = await fetch("https://text.pollinations.ai/", {
+                // Using an un-tracked, secure pipeline layout
+                const response = await fetch("https://api.nexra.pro/v1/chat/completions", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         messages: chatHistory,
-                        model: "openai-large"
+                        model: "gpt-4o"
                     })
                 });
 
-                if (!response.ok) throw new Error("Server busy");
-
-                const aiReply = await response.text();
+                const data = await response.json();
                 loader.style.display = "none";
-
+                
+                const aiReply = data.choices[0].message.content;
                 chatHistory.push({ role: "assistant", content: aiReply });
                 appendBubble(aiReply, 'jeeva-row');
 
             } catch (error) {
-                // AUTOMATIC BACKUP ROUTE if the primary path fails
-                try {
-                    const altResponse = await fetch("https://open-api.replicate.workers.dev/chat/completions", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            model: "meta-llama-3-8b-instruct",
-                            messages: chatHistory
-                        })
-                    });
-                    const data = await altResponse.json();
-                    loader.style.display = "none";
-                    const altReply = data.choices[0].message.content;
-                    
-                    chatHistory.push({ role: "assistant", content: altReply });
-                    appendBubble(altReply, 'jeeva-row');
-                } catch (innerError) {
-                    loader.style.display = "none";
-                    appendBubble("Ah damn bro, something blocked the cloud sync. Try refreshing the page!", 'jeeva-row');
-                }
+                loader.style.display = "none";
+                appendBubble("Ah damn bro, the server shifted. Type it one more time!", 'jeeva-row');
+                console.error(error);
             }
         }
 
@@ -116,7 +98,7 @@
             const logs = document.getElementById('chatLogs');
             const row = document.createElement('div');
             row.className = `row ${rowClass}`;
-            let cleanText = text.replace(/\*\*(.*?)\*\"/g, '<b>$1</b>'); 
+            let cleanText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); 
             row.innerHTML = `<div class="bubble">${cleanText}</div>`;
             logs.appendChild(row);
             logs.scrollTop = logs.scrollHeight;
