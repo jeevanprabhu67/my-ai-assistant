@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeeva Assistant | Unlocked Core</title>
+    <title>Jeeva Assistant | True Core</title>
     <style>
         :root {
             --bg-dark: #070a13;
@@ -34,19 +34,19 @@
 
     <header>
         <h1>🤖 Jeeva<span> Assistant</span></h1>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">Infinite Brain Core Active</p>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">True Core Active</p>
     </header>
 
     <div class="chat-area" id="chatLogs">
         <div class="row jeeva-row">
             <div class="bubble">Yo! I am **Jeeva Assistant**, your personal AI friend. 
 
-            My global cloud brain is fully operational, bro! Ask me absolutely *anything*—to teach you a subject, write a script, solve math, or just chat. Let's go!</div>
+            Everything is completely fixed now, bro! Ask me absolutely *anything*—to teach you a subject, write a script, solve math, or just chat. Let's go!</div>
         </div>
     </div>
 
     <div class="input-area">
-        <div class="loader" id="loadingText">Jeeva is processing global data...</div>
+        <div class="loader" id="loadingText">Jeeva is thinking...</div>
         <div class="input-box">
             <input type="text" id="userInput" placeholder="Ask absolutely anything..." onkeydown="if(event.key === 'Enter') askJeeva()">
             <button onclick="askJeeva()">Send</button>
@@ -54,8 +54,9 @@
     </div>
 
     <script>
+        // Keeps track of the text conversation locally to feed to the network cleanly
         let chatHistory = [
-            { role: "system", content: "You are Jeeva Assistant, a brilliant, super smart, and down-to-earth AI friend. Speak casually to the user like a peer (use words like 'bro', 'yo', 'cool'), but give incredibly accurate, detailed, and insightful answers. You remember the conversation history, learn from your mistakes, and can teach any subject or write any code perfectly." }
+            "System: You are Jeeva Assistant, a brilliant, super smart, and down-to-earth AI friend. Speak casually to the user like a peer (use words like 'bro', 'yo', 'cool'), but give incredibly accurate, detailed, and insightful answers. You remember conversation history perfectly."
         ];
 
         async function askJeeva() {
@@ -69,35 +70,26 @@
             const loader = document.getElementById('loadingText');
             loader.style.display = "block";
 
-            chatHistory.push({ role: "user", content: userText });
+            chatHistory.push(`User: ${userText}`);
 
             try {
-                // Assembling link cleanly to keep GitHub scanners quiet
-                const a = "ht" + "tps" + ":/";
-                const b = "/te" + "xt.p" + "oll";
-                const c = "ina" + "tion" + "s.a" + "i/";
-                const finalUrl = a + b + c;
+                // Compiles the current context layout for a direct open response
+                const fullPrompt = chatHistory.join("\n") + "\nAssistant:";
+                const targetUrl = `https://text.pollinations.ai/${encodeURIComponent(fullPrompt)}?model=openai`;
 
-                const response = await fetch(finalUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        messages: chatHistory
-                    })
-                });
+                // Single direct call with no authorization barriers
+                const response = await fetch(targetUrl);
+                if (!response.ok) throw new Error("API call failed");
 
-                if (!response.ok) throw new Error("Server error");
-
-                // FIXED: Reading response as pure text instead of JSON
                 const aiReply = await response.text();
                 loader.style.display = "none";
                 
-                chatHistory.push({ role: "assistant", content: aiReply });
+                chatHistory.push(`Assistant: ${aiReply}`);
                 appendBubble(aiReply, 'jeeva-row');
 
             } catch (error) {
                 loader.style.display = "none";
-                appendBubble("Ah damn bro, the server shifted. Hit send one more time!", 'jeeva-row');
+                appendBubble("Ah damn bro, connection glitched. Try hitting send again!", 'jeeva-row');
                 console.error(error);
             }
         }
@@ -107,7 +99,7 @@
             const row = document.createElement('div');
             row.className = `row ${rowClass}`;
             
-            let cleanText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>'); 
+            let cleanText = text.replace(/\*\/(.*?)\*\//g, '<b>$1</b>'); 
             
             row.innerHTML = `<div class="bubble">${cleanText}</div>`;
             logs.appendChild(row);
