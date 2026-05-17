@@ -3,738 +3,534 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI AI - Full-Featured Matrix Workspace</title>
+    <title>Jeeva Sovereign Workspace v18</title>
     <style>
         :root {
-            --bg-darker: #0a0e17;
-            --bg-dark: #121824;
-            --bg-card: #1c2333;
-            --neon-cyan: #00f0ff;
-            --neon-magenta: #ff007f;
-            --text-main: #e2e8f0;
+            --bg-darker: #060913;
+            --bg-dark: #0f1626;
+            --bg-card: #141d30;
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.2);
+            --user-blue: #2563eb;
+            --text: #f8fafc;
             --text-muted: #64748b;
-            --border: #2e3b52;
+            --border: rgba(255, 255, 255, 0.06);
+            --neon-magenta: #ff007f;
+            --neon-cyan: #00f0ff;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        body.admin-theme {
+            --bg-darker: #0a0505;
+            --bg-dark: #140b0b;
+            --accent: #ef4444;
+            --accent-glow: rgba(239, 68, 68, 0.3);
+            --border: rgba(239, 68, 68, 0.15);
         }
 
-        body {
-            background-color: var(--bg-darker);
-            color: var(--text-main);
-            overflow-x: hidden;
-            padding-bottom: 40px;
+        body.matrix-active {
+            background: linear-gradient(rgba(6, 9, 19, 0.95), rgba(6, 9, 19, 0.95)), url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGN0cmF5Mzg4ZXBtZ3pxNzN0ZXN0Nm9nbm00Mno0Z3R5Z3R6ZndpdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3rVfBU99D0gmk/giphy.gif');
+            background-size: cover;
         }
 
-        /* --- Header UI --- */
-        header {
-            background: linear-gradient(90deg, var(--bg-dark), #1a2235);
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--border);
-            box-shadow: 0 4px 20px rgba(0, 240, 255, 0.1);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: var(--bg-darker); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        /* --- Header --- */
+        header { 
+            background: rgba(15, 22, 38, 0.8); 
+            backdrop-filter: blur(12px); 
+            border-bottom: 1px solid var(--border); 
+            padding: 12px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            z-index: 10;
         }
+        .brand h1 { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+        .brand h1 span { color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
+        .status-pill { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; color: var(--accent); font-weight: bold; }
 
-        .status-pill {
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid var(--neon-cyan);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: var(--neon-cyan);
-            animation: pulse 2s infinite;
-        }
-
-        /* --- Main Layout Grid --- */
-        .container {
-            max-width: 1400px;
-            margin: 25px auto;
-            padding: 0 20px;
+        /* --- Main App Split Layout --- */
+        .workspace {
+            flex: 1;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
+            grid-template-columns: 420px 1fr;
+            height: calc(100vh - 58px);
+            overflow: hidden;
         }
 
-        @media (max-width: 1024px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 950px) {
+            .workspace { grid-template-columns: 1fr; }
+            .tools-panel { display: none; } /* Focus on chat for mobile mobile layouts */
         }
 
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+        /* --- LEFT SIDE: SEPARATE CHATBOT CONSOLE --- */
+        .chat-sidebar {
+            background: var(--bg-dark);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+        .chat-header-info {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            background: rgba(0,0,0,0.1);
+        }
+        .chat-logs {
+            flex: 1;
+            overflow-y: auto;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--neon-cyan);
-        }
-
-        .card.alt::before {
-            background: var(--neon-magenta);
-        }
-
-        h2 {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* --- UI Controls & Forms --- */
-        button {
-            background: #252f44;
-            color: var(--text-main);
-            border: 1px solid var(--border);
-            padding: 10px 18px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        button:hover {
-            background: var(--neon-cyan);
-            color: var(--bg-darker);
-            box-shadow: 0 0 10px rgba(0,240,255,0.4);
-            border-color: var(--neon-cyan);
-        }
-
-        button.accent-btn {
-            background: linear-gradient(135deg, #00f0ff, #7000ff);
-            color: white;
-            border: none;
-        }
-
-        button.accent-btn:hover {
-            filter: brightness(1.2);
-            box-shadow: 0 0 15px rgba(112,0,255,0.5);
-        }
-
-        input, select, textarea {
-            background: var(--bg-darker);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            outline: none;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--neon-cyan);
-        }
-
-        /* --- Module 1: AI Chat & Generation --- */
-        .chat-container {
-            height: 350px;
-            overflow-y: auto;
-            border: 1px solid var(--border);
-            background: var(--bg-dark);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .msg {
-            max-width: 85%;
-            padding: 10px 14px;
-            border-radius: 8px;
-            line-height: 1.4;
-            font-size: 0.95rem;
-        }
-
-        .msg.user {
-            background: #2e3d5c;
-            align-self: flex-end;
-            border-bottom-right-radius: 2px;
-        }
-
-        .msg.ai {
-            background: #1e293b;
-            align-self: flex-start;
-            border-bottom-left-radius: 2px;
-            border-left: 2px solid var(--neon-cyan);
-        }
-
-        .media-output {
-            margin-top: 10px;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .media-output canvas, .media-output video {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-
-        .chat-input-bar {
-            display: flex;
-            gap: 10px;
-        }
-
-        .chat-input-bar input {
-            flex: 1;
-        }
-
-        /* --- Module 2: Image Tool & Pixel Editor --- */
-        .editor-workspace {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             gap: 15px;
         }
+        .row { display: flex; width: 100%; opacity: 0; transform: translateY(10px); animation: pop 0.25s forwards ease; }
+        @keyframes pop { to { opacity: 1; transform: translateY(0); } }
+        .user-row { justify-content: flex-end; }
+        .jeeva-row { justify-content: flex-start; }
+        
+        .bubble { max-width: 85%; padding: 12px 16px; border-radius: 16px; line-height: 1.5; font-size: 0.92rem; white-space: pre-wrap; word-break: break-word; }
+        .user-row .bubble { background: linear-gradient(135deg, var(--user-blue), #1d4ed8); border-bottom-right-radius: 2px; color: #fff; }
+        .jeeva-row .bubble { background: var(--bg-card); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
+        .admin-bubble { background: rgba(239, 68, 68, 0.03) !important; border: 1px dashed var(--accent) !important; font-family: monospace; font-size: 0.85rem; }
+        .mario-bubble { background: linear-gradient(135deg, #e52521, #b3110e) !important; color: white !important; border: 2px solid #fbd000 !important; font-weight: bold; }
 
-        .canvas-container {
-            background: #000;
-            border: 2px dashed var(--border);
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-            cursor: crosshair;
-        }
+        .chat-input-area { padding: 15px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.2); }
+        .chat-box { background: var(--bg-card); border-radius: 25px; display: flex; padding: 4px 4px 4px 16px; border: 1px solid var(--border); }
+        .chat-box input { flex: 1; background: none; border: none; outline: none; color: white; font-size: 0.95rem; }
+        .chat-box button { background: var(--accent); border: none; color: #000; font-weight: 700; padding: 0 16px; height: 38px; border-radius: 19px; cursor: pointer; }
+        .loader { display: none; color: var(--accent); text-align: center; font-size: 0.8rem; margin-bottom: 8px; font-style: italic; }
 
-        .editor-controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 10px;
-            width: 100%;
-        }
-
-        .slider-group {
+        /* --- RIGHT SIDE: INTERACTIVE TOOLS DASHBOARD USING TABBED UI --- */
+        .tools-panel {
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-darker);
         }
-
-        /* --- Module 3: Addictive Game Engine --- */
-        .game-panel {
-            text-align: center;
-        }
-
-        .game-stat-bar {
+        
+        /* Tab Navigation Bar */
+        .tab-bar {
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border);
             display: flex;
-            justify-content: space-between;
-            background: var(--bg-dark);
-            padding: 8px 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
+            padding: 0 10px;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 15px 20px;
             font-size: 0.9rem;
-            font-family: monospace;
-        }
-
-        .grid-board {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            max-width: 320px;
-            margin: 0 auto 15px auto;
-        }
-
-        .grid-tile {
-            aspect-ratio: 1;
-            background: var(--bg-dark);
-            border: 2px solid var(--border);
-            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.1s, background-color 0.2s;
+            position: relative;
+            transition: color 0.2s;
+        }
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active {
+            color: var(--neon-cyan);
+        }
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan);
         }
 
-        .grid-tile:active {
-            transform: scale(0.95);
+        /* Tab Content Panes */
+        .tab-content {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            display: none;
         }
+        .tab-content.active { display: block; }
 
-        .grid-tile.active-flash {
-            background-color: var(--neon-cyan);
-            box-shadow: 0 0 15px var(--neon-cyan);
+        .tool-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
+        .tool-card h2 { font-size: 1.1rem; margin-bottom: 15px; color: var(--text); display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .grid-tile.success-flash {
-            background-color: #10b981;
-        }
+        /* General Widget Styles */
+        button.tool-btn { background: #1e293b; color: var(--text); border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.88rem; font-weight: 600; margin: 4px; transition: all 0.2s; }
+        button.tool-btn:hover { background: var(--neon-cyan); color: #000; border-color: var(--neon-cyan); box-shadow: 0 0 8px rgba(0, 240, 255, 0.3); }
+        button.accent { background: linear-gradient(135deg, var(--neon-cyan), #3b82f6); color: #000; border: none; }
+        
+        input[type="text"], select { background: var(--bg-darker); border: 1px solid var(--border); color: white; padding: 8px 12px; border-radius: 6px; outline: none; }
+        
+        /* Canvas Matrix Studio */
+        .canvas-area { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        canvas.studio-viewport { background: #000; border: 2px solid var(--border); border-radius: 8px; max-width: 100%; cursor: crosshair; }
+        .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; width: 100%; }
 
-        .grid-tile.fail-flash {
-            background-color: var(--neon-magenta);
-            box-shadow: 0 0 15px var(--neon-magenta);
-        }
+        /* Game System Panel */
+        .game-bar { display: flex; justify-content: space-between; background: var(--bg-darker); padding: 10px 15px; border-radius: 6px; margin-bottom: 15px; font-family: monospace; font-size: 0.88rem; border: 1px solid var(--border); }
+        .game-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 280px; margin: 0 auto 15px auto; }
+        .tile { aspect-ratio: 1; background: var(--bg-darker); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: background 0.15s; }
+        .tile.flash { background: var(--neon-cyan); box-shadow: 0 0 12px var(--neon-cyan); }
+        .tile.hit { background: #10b981; }
+        .tile.miss { background: var(--neon-magenta); }
 
-        /* --- System Utilities --- */
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .hidden { display: none !important; }
+        .sandbox-display { background: #000; border-radius: 8px; border: 1px solid var(--border); min-height: 150px; display: flex; justify-content: center; align-items: center; margin-top: 15px; overflow: hidden; }
+        .sandbox-display canvas { max-width: 100%; height: auto; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">⚡ OMNI MATRIX AI</div>
-        <div class="status-pill">Core Engine Active</div>
+        <div class="brand"><h1>🤖 Jeeva<span> Sovereign Control Engine</span></h1></div>
+        <div class="status-pill" id="systemState">SYSTEM OPERATIONAL</div>
     </header>
 
-    <div class="container">
+    <div class="workspace">
         
-        <!-- SECTION 1: FULL MULTIMEDIA GENERATION AI CORE -->
-        <div class="card">
-            <h2>🤖 AI Core (Text / Image / Video)</h2>
-            <div class="chat-container" id="chatContainer">
-                <div class="msg ai">Welcome to Omni Generation Core. Specify if you want to generate text, a <b>"photo"</b>, or a <b>"video"</b> in your prompt!</div>
-            </div>
+        <!-- ================= LEFT SIDEBAR: CHAT INTERFACE ================= -->
+        <div class="chat-sidebar">
+            <div class="chat-header-info">💬 PRIVATE CHAT CONSOLE LAYER</div>
             
-            <div class="chat-input-bar">
-                <select id="genType">
-                    <option value="auto">Auto-Detect</option>
-                    <option value="image">Force Photo</option>
-                    <option value="video">Force Video</option>
-                </select>
-                <input type="text" id="chatInput" placeholder="e.g., 'Generate photo of a cyberpunk city' or 'cyberpunk looping video'..." onkeydown="if(event.key === 'Enter') processAiAction()">
-                <button class="accent-btn" onclick="processAiAction()">Execute</button>
+            <div class="chat-logs" id="chatLogs">
+                <div class="row jeeva-row">
+                    <div class="bubble">Yo! I am **Jeeva Assistant**. Your chatbot environment is now completely separate from your tools panel on the right. 👑
+
+Type naturally to test my system cores, or run quick text automation arrays. Type `/help` or `/mario` for deep triggers!</div>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <div class="loader" id="chatLoader">⚡ Synchronizing arrays...</div>
+                <div class="chat-box">
+                    <input type="text" id="chatInput" placeholder="Message Jeeva or run root command..." onkeydown="if(event.key === 'Enter') sendToJeeva()">
+                    <button onclick="sendToJeeva()">Send</button>
+                </div>
             </div>
         </div>
 
-        <!-- SECTION 2: CANVAS PHOTO EDITING & PIXEL GENERATOR -->
-        <div class="card alt">
-            <h2>🎨 Photo Processing & Design Studio</h2>
-            <div class="editor-workspace">
-                <div class="canvas-container">
-                    <canvas id="studioCanvas" width="400" height="300"></canvas>
-                </div>
-                
-                <div class="editor-controls">
-                    <button onclick="triggerStudioPreset('pixel')">Generate Grid Base</button>
-                    <button onclick="applyStudioFilter('invert')">Invert Matrix</button>
-                    <button onclick="applyStudioFilter('grayscale')">Monochrome</button>
-                    <button onclick="applyStudioFilter('glitch')">Apply Matrix Glitch</button>
-                    <input type="color" id="brushColor" value="#00f0ff" title="Draw Color">
-                    <button onclick="clearStudioCanvas()" style="color: var(--neon-magenta)">Wipe Canvas</button>
-                </div>
+        <!-- ================= RIGHT REGION: ACCESSIBLE DASHBOARD TOOLS ================= -->
+        <div class="tools-panel">
+            
+            <!-- Interface Header Tabs -->
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab(event, 'photoStudioTab')">🎨 Photo Studio</button>
+                <button class="tab-btn" onclick="switchTab(event, 'generatorTab')">🛰️ AI Media Generator</button>
+                <button class="tab-btn" onclick="switchTab(event, 'gamesTab')">🎮 Neural Sync Game</button>
+            </div>
 
-                <div class="editor-controls" style="grid-template-columns: 1fr 1fr;">
-                    <div class="slider-group">
-                        <label>Color Contrast Boost</label>
-                        <input type="range" id="contrastSlider" min="-50" max="50" value="0" onchange="adjustContrast(this.value)">
+            <!-- TAB 1: PHOTO PROCESSING LAYER -->
+            <div id="photoStudioTab" class="tab-content active">
+                <div class="tool-card">
+                    <h2>🎨 Photo Processing Canvas</h2>
+                    <div class="canvas-area">
+                        <canvas id="studioCanvas" class="studio-viewport" width="450" height="300"></canvas>
+                        
+                        <div class="control-grid">
+                            <button class="tool-btn" onclick="buildStudioGrid()">Generate Grid Base</button>
+                            <button class="tool-btn" onclick="applyStudioFilter('invert')">Invert Channels</button>
+                            <button class="tool-btn" onclick="applyStudioFilter('mono')">Monochrome</button>
+                            <button class="tool-btn" onclick="applyStudioFilter('glitch')">Matrix Glitch</button>
+                            <button class="tool-btn" onclick="clearStudio()" style="color: var(--neon-magenta)">Wipe Canvas</button>
+                        </div>
+
+                        <div style="display: flex; gap: 20px; width: 100%; align-items: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+                            <label style="font-size: 0.85rem; color: var(--text-muted)">Brush Core Color:</label>
+                            <input type="color" id="studioBrushColor" value="#00f0ff">
+                            <span style="font-size: 0.8rem; color: var(--text-muted)">💡 Draw directly onto the canvas view window!</span>
+                        </div>
                     </div>
-                    <div class="slider-group">
-                        <label>Studio Grid Resolution</label>
-                        <select id="gridSizeSelect" onchange="triggerStudioPreset('pixel')">
-                            <option value="16">16 x 16 Retro</option>
-                            <option value="32" selected>32 x 32 Standard</option>
-                            <option value="64">64 x 64 High-Res</option>
+                </div>
+            </div>
+
+            <!-- TAB 2: AI MEDIA COMPILER PANEL -->
+            <div id="generatorTab" class="tab-content">
+                <div class="tool-card">
+                    <h2>🛰️ Automated Photo & Video Array Compiler</h2>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">Select production criteria to compile visual layouts instantly:</p>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <select id="mediaOutputFormat">
+                            <option value="photo">Compile Procedural Photo</option>
+                            <option value="video">Compile Sandbox Video Loop</option>
                         </select>
+                        <input type="text" id="mediaPromptInput" style="flex:1" placeholder="Describe layout environment (e.g., Cyber Neon Matrix Grid)...">
+                        <button class="tool-btn accent" onclick="triggerMediaCompilation()">Compile Engine Thread</button>
+                    </div>
+
+                    <div class="sandbox-display" id="sandboxDisplayArea">
+                        <div style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">No media compiled. Enter parameters above.</div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- SECTION 3: THE ADDICTIVE MATRIX SYNC GAME -->
-        <div class="card" style="grid-column: 1 / -1;">
-            <h2>🎮 Matrix Brainwave Synchronizer (Addictive Pattern Matcher)</h2>
-            <div class="game-panel">
-                <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 0.95rem;">
-                    Match the flashing memory sequences generated by the neural core. Harder sequences unlock faster processing loops!
-                </p>
-                <div class="game-stat-bar">
-                    <div>SCORE: <span id="gameScore" style="color: var(--neon-cyan)">0</span></div>
-                    <div>HI-SCORE: <span id="gameHighScore" style="color: var(--neon-magenta)">0</span></div>
-                    <div>STAGE STATUS: <span id="gameStatus" style="color: #10b981">Ready to Sync</span></div>
+            <!-- TAB 3: MATRIX SYNC GAME -->
+            <div id="gamesTab" class="tab-content">
+                <div class="tool-card" style="text-align: center;">
+                    <h2>🎮 Brainwave Synchronizer Loop</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Replicate the sequence pattern sent from the engine pipeline cores.</p>
+                    
+                    <div class="game-bar">
+                        <div>SCORE: <span id="gScore" style="color: var(--neon-cyan)">0</span></div>
+                        <div>HI-SCORE: <span id="gHiScore" style="color: var(--neon-magenta)">0</span></div>
+                        <div>STATUS: <span id="gStatus" style="color: var(--accent)">Ready</span></div>
+                    </div>
+
+                    <div class="game-grid" id="gameGridBoard"></div>
+                    
+                    <button class="tool-btn accent" onclick="bootGameInstance()" style="width: 180px; margin-top: 10px;">Boot Sync Array</button>
                 </div>
-
-                <div class="grid-board" id="gameBoard">
-                    <!-- Javascript populates 16 grid elements here dynamically -->
-                </div>
-
-                <button class="accent-btn" id="startGameBtn" onclick="startNewGame()" style="width: 200px; margin: 0 auto;">Boot Game Thread</button>
             </div>
-        </div>
 
+        </div>
     </div>
 
     <script>
-        // --- GLOBAL CONFIGS & CORES ---
-        const chatContainer = document.getElementById('chatContainer');
-        const studioCanvas = document.getElementById('studioCanvas');
-        const ctx = studioCanvas.getContext('2d');
+        // --- CHAT INTERFACE FUNCTIONALITIES ---
+        let chatHistory = [];
+        let isAdminActive = false;
+        let capacityLevel = 18000;
 
-        // Initial Canvas setup
-        clearStudioCanvas();
+        async function sendToJeeva() {
+            const el = document.getElementById('chatInput');
+            const txt = el.value.trim();
+            if (!txt) return;
 
-        // --- MODULE 1: AI LOGIC ENGINE (TEXT, PHOTO, VIDEO GENERATION) ---
-        function appendChatMessage(text, className, attachment = null) {
-            const wrapper = document.createElement('div');
-            wrapper.className = `msg ${className}`;
-            wrapper.innerHTML = text;
-            if (attachment) {
-                wrapper.appendChild(attachment);
+            // Secure Backdoor Trigger
+            if (txt.toUpperCase() === '/ADMIN') {
+                el.value = "";
+                activateAdminConsole();
+                return;
             }
-            chatContainer.appendChild(wrapper);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
 
-        function processAiAction() {
-            const inputField = document.getElementById('chatInput');
-            const promptText = inputField.value.trim();
-            const genType = document.getElementById('genType').value;
-            if (!promptText) return;
-
-            // Render User Message
-            appendChatMessage(promptText, 'user');
-            inputField.value = '';
-
-            // Analyze intent
-            setTimeout(() => {
-                let currentIntent = 'text';
-                if (genType === 'image' || promptText.toLowerCase().includes('photo') || promptText.toLowerCase().includes('image') || promptText.toLowerCase().includes('draw')) {
-                    currentIntent = 'image';
-                } else if (genType === 'video' || promptText.toLowerCase().includes('video') || promptText.toLowerCase().includes('animate')) {
-                    currentIntent = 'video';
-                }
-
-                if (currentIntent === 'image') {
-                    appendChatMessage(`✨ <b>Generating Neural Artwork:</b> "${promptText}"... Sending array metadata to canvas studio.`, 'ai');
-                    const generatedContainer = document.createElement('div');
-                    generatedContainer.className = 'media-output';
-                    
-                    const outCanvas = document.createElement('canvas');
-                    outCanvas.width = 320;
-                    outCanvas.height = 200;
-                    generateProceduralScene(outCanvas, promptText);
-                    
-                    generatedContainer.appendChild(outCanvas);
-                    appendChatMessage(`✨ Output for raw image block sequence loaded down below. Send to Editor Studio to scale.`, 'ai', generatedContainer);
-                    
-                    // Port to Studio Editor directly
-                    ctx.drawImage(outCanvas, 0, 0, studioCanvas.width, studioCanvas.height);
-                } 
-                else if (currentIntent === 'video') {
-                    appendChatMessage(`🎬 <b>Compiling Dynamic Neural Video Buffer:</b> "${promptText}"... Rendering frames.`, 'ai');
-                    const generatedContainer = document.createElement('div');
-                    generatedContainer.className = 'media-output';
-                    
-                    const outCanvas = document.createElement('canvas');
-                    outCanvas.width = 320;
-                    outCanvas.height = 180;
-                    generatedContainer.appendChild(outCanvas);
-                    appendChatMessage(`🎬 Video thread rendering loop activated directly inside live sandbox stream:`, 'ai', generatedContainer);
-                    
-                    animateProceduralVideo(outCanvas, promptText);
-                } 
-                else {
-                    appendChatMessage(`🤖 <b>Matrix Response:</b> Processing data arrays for "${promptText}". The neural layout operates optimally. You can request direct operations on photographs or run video compilations at any moment.`, 'ai');
-                }
-            }, 600);
-        }
-
-        // Procedural Artwork Generator
-        function generateProceduralScene(targetCanvas, prompt) {
-            const targetCtx = targetCanvas.getContext('2d');
-            const w = targetCanvas.width;
-            const h = targetCanvas.height;
-            
-            // Background array mapping
-            const gradient = targetCtx.createLinearGradient(0, 0, w, h);
-            if (prompt.toLowerCase().includes('neon') || prompt.toLowerCase().includes('cyber')) {
-                gradient.addColorStop(0, '#0f172a');
-                gradient.addColorStop(1, '#1e1b4b');
-            } else {
-                gradient.addColorStop(0, '#111827');
-                gradient.addColorStop(1, '#065f46');
+            // Command Hooks
+            if (txt.toLowerCase() === '/mario') {
+                el.value = "";
+                appendBubble("/mario", 'user-row');
+                setTimeout(() => {
+                    appendBubble("🍄 TOB TOBI TOB TOB MEME INBOUND! 🌟\n\n🎵 Tob Tobi Tob Tobi Tob Tob Tobi Tob!\n🎵 Tob Tobi Tob Tobi Tob Tob Tobi Tob!\n\nBroski, Mario is flying through the screen maps! Full peak dashboard energy! 😂🔥", 'jeeva-row', false, true);
+                }, 200);
+                return;
             }
-            targetCtx.fillStyle = gradient;
-            targetCtx.fillRect(0, 0, w, h);
 
-            // Draw abstract architectural nodes
-            for (let i = 0; i < 45; i++) {
-                targetCtx.fillStyle = i % 2 === 0 ? 'rgba(0, 240, 255, 0.4)' : 'rgba(255, 0, 127, 0.4)';
-                const size = Math.random() * 40 + 5;
-                targetCtx.fillRect(Math.random() * w, Math.random() * h, size, size);
+            if (txt.toLowerCase() === '/help') {
+                el.value = "";
+                appendBubble(txt, 'user-row');
+                appendBubble("✨ **Jeeva Sovereign Dashboard Navigation:**\n\n💬 **Chat Options:**\n• `/mario` - Explode Tob Tobi Tob meme array\n\n🕹️ **Accessible UI Modules (Right Pane):**\n• Use tabs to launch the **Canvas Photo Editor**, **Procedural Video Compiler**, or play the **Memory Grid Game** immediately!", 'jeeva-row');
+                return;
             }
-            
-            // Overlaid graphic lines
-            targetCtx.strokeStyle = 'rgba(255,255,255,0.15)';
-            targetCtx.beginPath();
-            for(let i=0; i<w; i+=20) {
-                targetCtx.moveTo(i, 0);
-                targetCtx.lineTo(w - i, h);
+
+            if (isAdminActive && txt.startsWith('/')) {
+                el.value = "";
+                runAdminCommand(txt);
+                return;
             }
-            targetCtx.stroke();
-        }
 
-        // Procedural Real-time Video Stream
-        function animateProceduralVideo(targetCanvas, prompt) {
-            const targetCtx = targetCanvas.getContext('2d');
-            const w = targetCanvas.width;
-            const h = targetCanvas.height;
-            let frame = 0;
+            appendBubble(txt, 'user-row');
+            el.value = "";
 
-            function renderFrame() {
-                if (!document.body.contains(targetCanvas)) return; // Kill thread loop if dropped
-                
-                targetCtx.fillStyle = '#090d16';
-                targetCtx.fillRect(0, 0, w, h);
+            const loader = document.getElementById('chatLoader');
+            loader.style.display = "block";
 
-                // Animated cyber-grid waves
-                targetCtx.strokeStyle = 'rgba(0, 240, 255, 0.3)';
-                targetCtx.lineWidth = 1;
-                targetCtx.beginPath();
-                let horizon = h / 2 + Math.sin(frame * 0.05) * 10;
-                
-                for(let i = 0; i <= w; i += 20) {
-                    targetCtx.moveTo(i, h);
-                    targetCtx.lineTo(w/2 + (i - w/2)*0.2, horizon);
-                }
-                targetCtx.stroke();
+            let identitySystem = "You are Jeeva Assistant, a top-tier legendary AI. You were custom built by your absolute genius owner. If anyone asks about your developer, owner, creator, or boss, proudly tell them that your owner is a master developer and speedcuber prodigy. Speak casually like an awesome tech peer, use 'bro' and 'yo', but provide absolute elite answers.";
 
-                // Dynamic energy orb
-                let orbY = horizon - 20 + Math.cos(frame * 0.08) * 15;
-                let radGrad = targetCtx.createRadialGradient(w/2, orbY, 2, w/2, orbY, 25);
-                radGrad.addColorStop(0, '#ff007f');
-                radGrad.addColorStop(1, 'rgba(0,0,0,0)');
-                targetCtx.fillStyle = radGrad;
-                targetCtx.beginPath();
-                targetCtx.arc(w/2, orbY, 25, 0, Math.PI*2);
-                targetCtx.fill();
+            let activeMessages = [{ role: "system", content: identitySystem }];
+            chatHistory.forEach(m => activeMessages.push(m));
+            activeMessages.push({ role: "user", content: txt });
 
-                frame++;
-                requestAnimationFrame(renderFrame);
-            }
-            renderFrame();
-        }
+            try {
+                const endpoint = ['h','t','t','p','s',':','/','/','t','e','x','t','.','p','o','l','l','i','n','a','t','i','o','n','s','.','a','i','/'].join('');
+                const res = await fetch(endpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ messages: activeMessages, model: "openai" })
+                });
+                const responseText = await res.text();
+                loader.style.display = "none";
 
-
-        // --- MODULE 2: CANVAS PHOTO EDITING & PIXEL STUDIO CORE ---
-        function clearStudioCanvas() {
-            ctx.fillStyle = '#0f172a';
-            ctx.fillRect(0, 0, studioCanvas.width, studioCanvas.height);
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 1;
-            for(let i=0; i<studioCanvas.width; i+=20) {
-                ctx.strokeRect(i, 0, 20, studioCanvas.height);
+                chatHistory.push({ role: "user", content: txt });
+                chatHistory.push({ role: "assistant", content: responseText });
+                appendBubble(responseText, 'jeeva-row');
+            } catch(e) {
+                loader.style.display = "none";
+                appendBubble("Matrix feed drop, bro. Send that transmission again!", 'jeeva-row');
             }
         }
 
-        function triggerStudioPreset(type) {
-            if (type === 'pixel') {
-                const size = parseInt(document.getElementById('gridSizeSelect').value) || 32;
-                const cellW = studioCanvas.width / size;
-                const cellH = studioCanvas.height / size;
-                
-                for (let x = 0; x < size; x++) {
-                    for (let y = 0; y < size; y++) {
-                        ctx.fillStyle = (x + y) % 2 === 0 ? '#1e293b' : '#111827';
-                        ctx.fillRect(x * cellW, y * cellH, cellW - 1, cellH - 1);
-                    }
+        function appendBubble(text, rowClass, isAdminAlert = false, isMario = false) {
+            const logs = document.getElementById('chatLogs');
+            const row = document.createElement('div');
+            row.className = `row ${rowClass}`;
+            let formatted = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+            let bClass = "bubble";
+            if (isAdminAlert) bClass += " admin-bubble";
+            if (isMario) bClass += " mario-bubble";
+            row.innerHTML = `<div class="${bClass}">${formatted}</div>`;
+            logs.appendChild(row);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        // --- TAB BAR UI SWITCHER ---
+        function switchTab(evt, tabId) {
+            const contents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < contents.length; i++) { contents[i].classList.remove('active'); }
+            const buttons = document.getElementsByClassName('tab-btn');
+            for (let i = 0; i < buttons.length; i++) { buttons[i].classList.remove('active'); }
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        // --- TAB MODULE 1: PHOTO PROCESSING CONTROLS ---
+        const sCanvas = document.getElementById('studioCanvas');
+        const sCtx = sCanvas.getContext('2d');
+        clearStudio();
+
+        function clearStudio() {
+            sCtx.fillStyle = '#0b0f19'; sCtx.fillRect(0, 0, sCanvas.width, sCanvas.height);
+            sCtx.strokeStyle = 'rgba(255,255,255,0.03)'; sCtx.lineWidth = 1;
+            for(let i=0; i<sCanvas.width; i+=20) { sCtx.strokeRect(i, 0, 20, sCanvas.height); }
+        }
+        function buildStudioGrid() {
+            for (let x = 0; x < 32; x++) {
+                for (let y = 0; y < 20; y++) {
+                    sCtx.fillStyle = (x + y) % 2 === 0 ? '#131a2b' : '#090d16';
+                    sCtx.fillRect(x * 15, y * 15, 14, 14);
                 }
             }
         }
-
-        function applyStudioFilter(filterType) {
-            const imgData = ctx.getImageData(0, 0, studioCanvas.width, studioCanvas.height);
-            const data = imgData.data;
-
-            for (let i = 0; i < data.length; i += 4) {
-                let r = data[i];
-                let g = data[i + 1];
-                let b = data[i + 2];
-
-                if (filterType === 'invert') {
-                    data[i] = 255 - r;
-                    data[i+1] = 255 - g;
-                    data[i+2] = 255 - b;
-                } else if (filterType === 'grayscale') {
-                    let v = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-                    data[i] = data[i+1] = data[i+2] = v;
-                } else if (filterType === 'glitch') {
-                    if (Math.random() > 0.85) {
-                        data[i] = data[i + 120] || 255; 
-                        data[i+1] = r;                 
-                        data[i+2] = 255;               
-                    }
-                }
+        function applyStudioFilter(type) {
+            const imgData = sCtx.getImageData(0,0,sCanvas.width,sCanvas.height);
+            const d = imgData.data;
+            for(let i=0; i<d.length; i+=4) {
+                if(type==='invert') { d[i]=255-d[i]; d[i+1]=255-d[i+1]; d[i+2]=255-d[i+2]; }
+                else if(type==='mono') { let v = 0.21*d[i]+0.71*d[i+1]+0.07*d[i+2]; d[i]=d[i+1]=d[i+2]=v; }
+                else if(type==='glitch' && Math.random()>0.85) { d[i]=d[i+80]||255; d[i+2]=255; }
             }
-            ctx.putImageData(imgData, 0, 0);
+            sCtx.putImageData(imgData,0,0);
         }
-
-        function adjustContrast(val) {
-            let factor = (259 * (parseInt(val) + 255)) / (255 * (259 - parseInt(val)));
-            const imgData = ctx.getImageData(0, 0, studioCanvas.width, studioCanvas.height);
-            const data = imgData.data;
-
-            for (let i = 0; i < data.length; i += 4) {
-                data[i] = factor * (data[i] - 128) + 128;
-                data[i+1] = factor * (data[i+1] - 128) + 128;
-                data[i+2] = factor * (data[i+2] - 128) + 128;
-            }
-            ctx.putImageData(imgData, 0, 0);
-        }
-
-        // Live Drawing Interface on Canvas Workspace
-        let isDrawing = false;
-        studioCanvas.addEventListener('mousedown', () => isDrawing = true);
-        studioCanvas.addEventListener('mouseup', () => isDrawing = false);
-        studioCanvas.addEventListener('mouseleave', () => isDrawing = false);
-        studioCanvas.addEventListener('mousemove', (e) => {
-            if (!isDrawing) return;
-            const rect = studioCanvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const color = document.getElementById('brushColor').value;
-            
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            ctx.arc(x, y, 8, 0, Math.PI * 2);
-            ctx.fill();
+        let drawing = false;
+        sCanvas.addEventListener('mousedown', () => drawing = true);
+        sCanvas.addEventListener('mouseup', () => drawing = false);
+        sCanvas.addEventListener('mouseleave', () => drawing = false);
+        sCanvas.addEventListener('mousemove', (e) => {
+            if(!drawing) return;
+            const r = sCanvas.getBoundingClientRect();
+            sCtx.fillStyle = document.getElementById('studioBrushColor').value;
+            sCtx.beginPath(); sCtx.arc(e.clientX - r.left, e.clientY - r.top, 6, 0, Math.PI*2); sCtx.fill();
         });
 
+        // --- TAB MODULE 2: MEDIA COMPILER (PHOTO & VIDEO) ---
+        function triggerMediaCompilation() {
+            const mode = document.getElementById('mediaOutputFormat').value;
+            const prompt = document.getElementById('mediaPromptInput').value.trim() || "Default Core Layout";
+            const display = document.getElementById('sandboxDisplayArea');
+            display.innerHTML = "";
 
-        // --- MODULE 3: THE HIGHLY ADDICTIVE PATTERN ENGINE ---
-        const gameBoard = document.getElementById('gameBoard');
-        let computerSequence = [];
-        let playerSequence = [];
-        let activeScore = 0;
-        let highScore = 0;
-        let acceptingInput = false;
+            const canvas = document.createElement('canvas');
+            canvas.width = 400; canvas.height = 200;
+            display.appendChild(canvas);
 
-        // Build grid structure
-        for (let i = 0; i < 16; i++) {
-            const tile = document.createElement('div');
-            tile.className = 'grid-tile';
-            tile.dataset.id = i;
-            tile.onclick = () => handleTileClick(i);
-            gameBoard.appendChild(tile);
+            if (mode === 'photo') {
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#0a0e17'; ctx.fillRect(0,0,400,200);
+                ctx.fillStyle = 'rgba(0, 240, 255, 0.3)';
+                for(let i=0; i<30; i++) { ctx.fillRect(Math.random()*400, Math.random()*200, Math.random()*50, Math.random()*50); }
+                // Transfer artwork block to primary view instantly
+                sCtx.drawImage(canvas, 0, 0, sCanvas.width, sCanvas.height);
+            } else {
+                let frame = 0; const ctx = canvas.getContext('2d');
+                function loop() {
+                    if(!document.body.contains(canvas)) return;
+                    ctx.fillStyle = '#05070b'; ctx.fillRect(0,0,400,200);
+                    ctx.strokeStyle = '#ff007f'; ctx.beginPath();
+                    let horizon = 100 + Math.sin(frame*0.06)*12;
+                    for(let i=0; i<=400; i+=25) { ctx.moveTo(i,200); ctx.lineTo(200+(i-200)*0.3, horizon); }
+                    ctx.stroke(); frame++; requestAnimationFrame(loop);
+                }
+                loop();
+            }
         }
 
-        function startNewGame() {
-            activeScore = 0;
-            computerSequence = [];
-            document.getElementById('gameScore').innerText = activeScore;
-            document.getElementById('startGameBtn').innerText = "Restart Sync Array";
-            triggerNextSequenceStage();
+        // --- TAB MODULE 3: REPLICATOR MEMORY GRID GAME ---
+        const gBoard = document.getElementById('gameGridBoard');
+        let compSeq = []; let playSeq = []; let score = 0; let hiScore = 0; let activeInput = false;
+        for(let i=0; i<16; i++) {
+            const tile = document.createElement('div'); tile.className = 'tile';
+            tile.onclick = () => tilePressed(i); gBoard.appendChild(tile);
         }
-
-        function triggerNextSequenceStage() {
-            playerSequence = [];
-            acceptingInput = false;
-            document.getElementById('gameStatus').innerText = "Observing Matrix Stream...";
-            document.getElementById('gameStatus').style.color = varToHex('--neon-magenta');
-
-            // Append new node sequence step
-            computerSequence.push(Math.floor(Math.random() * 16));
-            playbackSequence(0);
+        function bootGameInstance() {
+            score = 0; compSeq = []; document.getElementById('gScore').innerText = score;
+            nextGameRound();
         }
-
-        function playbackSequence(index) {
-            if (index >= computerSequence.length) {
-                acceptingInput = true;
-                document.getElementById('gameStatus').innerText = "Your Turn! Replicate Pattern";
-                document.getElementById('gameStatus').style.color = '#00f0ff';
+        function nextGameRound() {
+            playSeq = []; activeInput = false;
+            document.getElementById('gStatus').innerText = "Observing...";
+            compSeq.push(Math.floor(Math.random()*16)); playSequenceRoute(0);
+        }
+        function playSequenceRoute(idx) {
+            if (idx >= compSeq.length) {
+                activeInput = true; document.getElementById('gStatus').innerText = "Replicate!";
                 return;
             }
-
-            let tileId = computerSequence[index];
-            let targetTile = gameBoard.children[tileId];
-
+            let t = gBoard.children[compSeq[idx]];
             setTimeout(() => {
-                targetTile.classList.add('active-flash');
-                setTimeout(() => {
-                    targetTile.classList.remove('active-flash');
-                    setTimeout(() => {
-                        playbackSequence(index + 1);
-                    }, 200);
-                }, 400);
+                t.classList.add('flash');
+                setTimeout(() => { t.classList.remove('flash'); setTimeout(() => playSequenceRoute(idx+1), 150); }, 350);
             }, 100);
         }
+        function tilePressed(id) {
+            if (!activeInput) return;
+            const t = gBoard.children[id];
+            playSeq.push(id);
+            t.classList.add('hit'); setTimeout(() => t.classList.remove('hit'), 150);
 
-        function handleTileClick(tileId) {
-            if (!acceptingInput) return;
-
-            const targetTile = gameBoard.children[tileId];
-            playerSequence.push(tileId);
-
-            // Instant click feedback
-            targetTile.classList.add('success-flash');
-            setTimeout(() => targetTile.classList.remove('success-flash'), 150);
-
-            // Verify input sequence integrity
-            const currentStep = playerSequence.length - 1;
-            if (playerSequence[currentStep] !== computerSequence[currentStep]) {
-                // Fail state triggered
-                document.getElementById('gameStatus').innerText = "Matrix Desynced! Core Failed.";
-                document.getElementById('gameStatus').style.color = varToHex('--neon-magenta');
-                
-                // Blast all elements visually
-                Array.from(gameBoard.children).forEach(t => t.classList.add('fail-flash'));
-                setTimeout(() => {
-                    Array.from(gameBoard.children).forEach(t => t.classList.remove('fail-flash'));
-                }, 400);
-
-                acceptingInput = false;
-                return;
+            let step = playSeq.length - 1;
+            if (playSeq[step] !== compSeq[step]) {
+                document.getElementById('gStatus').innerText = "Failed!";
+                Array.from(gBoard.children).forEach(el => el.classList.add('miss'));
+                setTimeout(() => Array.from(gBoard.children).forEach(el => el.classList.remove('miss')), 400);
+                activeInput = false; return;
             }
-
-            if (playerSequence.length === computerSequence.length) {
-                // Complete Stage clearing sequence
-                activeScore++;
-                document.getElementById('gameScore').innerText = activeScore;
-                if (activeScore > highScore) {
-                    highScore = activeScore;
-                    document.getElementById('gameHighScore').innerText = highScore;
-                }
-                document.getElementById('gameStatus').innerText = "Node Match Confirmed! Advancing...";
-                document.getElementById('gameStatus').style.color = '#10b981';
-                
-                acceptingInput = false;
-                setTimeout(triggerNextSequenceStage, 800);
+            if (playSeq.length === compSeq.length) {
+                score++; document.getElementById('gScore').innerText = score;
+                if (score > hiScore) { hiScore = score; document.getElementById('gHiScore').innerText = hiScore; }
+                activeInput = false; setTimeout(nextGameRound, 700);
             }
         }
 
-        function varToHex(variableName) {
-            return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+        // --- ROOT HIDDEN CONTROL PANEL ---
+        function activateAdminConsole() {
+            isAdminActive = true;
+            document.body.className = "admin-theme";
+            document.getElementById('systemState').innerText = "SOVEREIGN OVERDRIVE ACCESS";
+            appendBubble("[OVERDRIVE CORES DEPLOYED]: ROOT OVERRIDES PASSING CLEANLY.\n\nAdmin Terminal Codes:\n• /see - Display root paths\n• /google - Run capacity sync test arrays\n• /scramble - Generate 20-move cubing matrix sequence\n• /exit - Lock interface structures down safely", 'jeeva-row', true);
+        }
+        function runAdminCommand(line) {
+            const c = line.split(' ')[0].toLowerCase();
+            if (c === '/see') {
+                appendBubble("[SYSTEM ENGINE ROUTING MAP]:\n• /google (Expand indices)\n• /scramble (3x3 scramble metrics)\n• /exit (Lock administration console)", 'jeeva-row', true);
+            } else if (c === '/google') {
+                capacityLevel += 1500;
+                appendBubble(`[🛰️ DATA SYNC LOOP]: Fetching remote index nodes. Capacity limits extended to ${capacityLevel}! Engine getting stronger, bro!`, 'jeeva-row', true);
+            } else if (c === '/scramble') {
+                const moves = ["R", "L", "U", "D", "F", "B"]; const mods = ["", "'", "2"]; let scr = []; let last = "";
+                for (let i = 0; i < 20; i++) {
+                    let m = moves[Math.floor(Math.random()*moves.length)];
+                    while(m === last) { m = moves[Math.floor(Math.random()*moves.length)]; }
+                    scr.push(m + mods[Math.floor(Math.random()*mods.length)]); last = m;
+                }
+                appendBubble(`[🎲 OFFICIAL CUBING MATRIX SEQUENCE]:\n${scr.join(" ")}`, 'jeeva-row', true);
+            } else if (c === '/exit') {
+                isAdminActive = false; document.body.className = "";
+                document.getElementById('systemState').innerText = "SYSTEM OPERATIONAL";
+                appendBubble("[SYSTEM]: Hidden root modules locked down safely.", 'jeeva-row', true);
+            } else {
+                appendBubble(`[ERROR]: Root array code '${c}' not indexed.`, 'jeeva-row', true);
+            }
         }
     </script>
 </body>
