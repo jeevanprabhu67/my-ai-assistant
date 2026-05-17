@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeeva Assistant | Multi-Core Pro</title>
+    <title>Jeeva Assistant | Ultimate Sovereign Edition</title>
     <style>
         :root {
             --bg-dark: #060913;
@@ -21,7 +21,6 @@
             --accent-glow: rgba(59, 130, 246, 0.25);
         }
 
-        /* Standard Admin Mode Theme */
         body.admin-theme {
             --bg-dark: #0a0505;
             --bg-card: #140b0b;
@@ -30,13 +29,17 @@
             --border: rgba(239, 68, 68, 0.15);
         }
 
-        /* Extra Smart Admin Mode Theme */
         body.admin-smart-theme {
             --bg-dark: #0c0a02;
             --bg-card: #181305;
             --accent: #eab308;
             --accent-glow: rgba(234, 179, 8, 0.25);
             --border: rgba(234, 179, 8, 0.15);
+        }
+
+        body.matrix-active {
+            background: linear-gradient(rgba(6, 9, 19, 0.92), rgba(6, 9, 19, 0.92)), url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGN0cmF5Mzg4ZXBtZ3pxNzN0ZXN0Nm9nbm00Mno0Z3R5Z3R6ZndpdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3rVfBU99D0gmk/giphy.gif');
+            background-size: cover;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
@@ -61,12 +64,11 @@
             align-items: center;
             z-index: 10;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-            transition: border 0.3s ease;
         }
         
         .brand h1 { font-size: 1.3rem; font-weight: 700; }
         .brand h1 span { color: var(--accent); transition: color 0.3s ease; text-shadow: 0 0 10px var(--accent-glow); }
-        .brand p { color: var(--text-muted); font-size: 0.8rem; transition: color 0.3s ease; }
+        .brand p { color: var(--text-muted); font-size: 0.8rem; }
 
         .toggle-container {
             background: rgba(0, 0, 0, 0.4);
@@ -74,7 +76,6 @@
             border-radius: 30px;
             display: flex;
             border: 1px solid var(--border);
-            transition: all 0.3s ease;
         }
 
         .mode-btn {
@@ -86,7 +87,6 @@
             padding: 8px 16px;
             cursor: pointer;
             border-radius: 20px;
-            z-index: 2;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -138,15 +138,22 @@
             background: var(--bg-card); 
             border: 1px solid var(--border); 
             border-bottom-left-radius: 4px;
-            transition: all 0.3s ease;
         }
 
         .admin-alert-bubble {
-            background: rgba(239, 68, 68, 0.05) !important;
+            background: rgba(239, 68, 68, 0.03) !important;
             border: 1px dashed var(--accent) !important;
             color: var(--text) !important;
             font-family: 'Courier New', Courier, monospace !important;
             font-size: 0.9rem !important;
+        }
+
+        .mario-bubble {
+            background: linear-gradient(135deg, #e52521, #b3110e) !important;
+            color: #ffffff !important;
+            border: 2px solid #fbd000 !important;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
 
         .input-area { 
@@ -164,7 +171,6 @@
             padding: 6px 6px 6px 22px; 
             border: 1px solid var(--border);
             transition: all 0.25s ease;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         .input-box:focus-within {
             border-color: var(--accent);
@@ -192,7 +198,6 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        .input-box button:hover { transform: scale(1.02); }
         
         .loader { 
             display: none; 
@@ -213,7 +218,7 @@
 
     <header>
         <div class="brand">
-            <h1>🤖 Jeeva<span> Assistant</span></h1>
+            <h1>🤖 Jeeva<span> Sovereign</span></h1>
             <p id="coreLabel">Turbo Fast Core Active</p>
         </div>
         <div class="toggle-container" id="switcherPanel">
@@ -224,16 +229,16 @@
 
     <div class="chat-area" id="chatLogs">
         <div class="row jeeva-row">
-            <div class="bubble">Yo! I am **Jeeva Assistant**. 
+            <div class="bubble">Yo! I am **Jeeva Assistant** — Ultimate Edition. 👑
 
-            System pipelines re-calibrated. All systems are officially 100% stable, bro! Let's get it!</div>
+Type anything to start chatting. Explore hidden features or type `/mario` for something special!</div>
         </div>
     </div>
 
     <div class="input-area">
         <div class="loader" id="loadingText">⚡ Jeeva is flying...</div>
         <div class="input-box">
-            <input type="text" id="userInput" placeholder="Ask absolutely anything..." onkeydown="if(event.key === 'Enter') askJeeva()">
+            <input type="text" id="userInput" placeholder="Ask absolutely anything or run a command..." onkeydown="if(event.key === 'Enter') askJeeva()">
             <button onclick="askJeeva()">Send</button>
         </div>
     </div>
@@ -244,6 +249,7 @@
         let isAdminSmart = false;
         let chatHistory = [];
         let customSystemOverride = null;
+        let capacityLevel = 9000;
         
         let timerInterval = null;
         let timerSeconds = 0;
@@ -260,12 +266,12 @@
 
             if (mode === 'fast') {
                 document.getElementById('fastBtn').classList.add('active');
-                body.className = "";
+                body.classList.remove("thinking-theme");
                 label.innerText = "Turbo Fast Core Active";
                 loader.innerText = "⚡ Jeeva is flying...";
             } else {
                 document.getElementById('thinkBtn').classList.add('active');
-                body.className = "thinking-theme";
+                body.classList.add("thinking-theme");
                 label.innerText = "Deep Neural Chain Active";
                 loader.innerText = "🧠 Jeeva is processing logical matrices...";
             }
@@ -276,14 +282,31 @@
             const userText = inputField.value.trim();
             if (!userText) return;
 
-            // Catch admin console entry
+            // Secret trigger to jump inside the developer override layer
             if (userText.toUpperCase() === '/ADMIN') {
                 inputField.value = "";
                 activateAdminConsole();
                 return;
             }
 
-            // Catch custom commands inside admin mode
+            // User Facing Secret Fun Commands
+            if (userText.toLowerCase() === '/mario') {
+                inputField.value = "";
+                appendBubble("/mario", 'user-row');
+                setTimeout(() => {
+                    appendBubble("🍄 TOB TOBI TOB TOB MEME INBOUND! 🌟\n\n🎵 Tob Tobi Tob Tobi Tob Tob Tobi Tob!\n🎵 Tob Tobi Tob Tobi Tob Tob Tobi Tob!\n\nBroski, Mario is flying through the map right now! Pure peak energy! 😂🔥", 'jeeva-row', false, true);
+                }, 300);
+                return;
+            }
+
+            // Standard safety blocker so user help queries don't leak your hidden console layout
+            if (userText.toLowerCase() === '/help' || userText.toLowerCase() === '/see') {
+                inputField.value = "";
+                appendBubble(userText, 'user-row');
+                appendBubble("✨ Welcome to Jeeva Assistant! You can talk to me casually like a cool tech peer. I can write scripts, troubleshoot errors, layout designs, and remember past context easily. Type `/mario` to launch the ultimate meme module!", 'jeeva-row');
+                return;
+            }
+
             if (isAdminActive && userText.startsWith('/')) {
                 inputField.value = "";
                 runAdminAction(userText);
@@ -296,51 +319,46 @@
             const loader = document.getElementById('loadingText');
             loader.style.display = "block";
 
-            let systemContext = "";
-            let chosenModel = "openai"; // For ultra compatibility and smart formatting
+            // Establish deep identity frameworks: recognizes creator context and maintains high tech persona
+            let systemContext = "You are Jeeva Assistant, a top-tier legendary AI. You were custom built by your absolute genius owner. If anyone asks about your developer, owner, creator, or boss, proudly tell them that your owner is a master developer and speedcuber prodigy. Speak casually like an awesome tech peer, use 'bro' and 'yo', but provide absolute elite answers. ";
 
             if (customSystemOverride) {
-                systemContext = customSystemOverride;
+                systemContext += customSystemOverride;
             } else if (isAdminActive && isAdminSmart) {
-                systemContext = "You are Jeeva Assistant in ADMIN EXTRA SMART MODE. You are an absolute elite superintelligence. Breakdown everything using hyper-deep logical chains, scientific precision, and master developer paradigms. Still speak naturally like an awesome tech peer, but leave zero details out.";
+                systemContext += "ADMIN SOVEREIGN EXTRA SMART MODE: Breakdown targets using supreme algorithmic precision, infinite detail layers, and master developer frameworks.";
             } else if (currentMode === 'fast') {
-                systemContext = "You are Jeeva Assistant in FAST MODE. Be brilliant, super smart, and speak casually like a cool peer (use 'bro', 'yo'). Give highly accurate, super quick, snappy, punchy, and brief replies.";
+                systemContext += "FAST MODE: Keep responses snappy, super punchy, hyper-accurate, and instantly effective.";
             } else {
-                systemContext = "You are Jeeva Assistant in THINKING MODE. Speak casually like a peer but perform intense, highly detailed, deep logical breakdowns step-by-step.";
+                systemContext += "THINKING MODE: Conduct massive step-by-step structural logical chains before summarizing data fields.";
             }
 
-            // Standardize full chat history layout cleanly
             let activeMessages = [
                 { role: "system", content: systemContext }
             ];
             
-            // Build historical context strings correctly
             chatHistory.forEach(msg => {
                 activeMessages.push({ role: msg.role, content: msg.content });
             });
             
-            // Push current message
             activeMessages.push({ role: "user", content: userText });
 
             try {
                 const apiBase = ['h','t','t','p','s',':','/','/','t','e','x','t','.','p','o','l','l','i','n','a','t','i','o','n','s','.','a','i','/'].join('');
 
-                // Bug Fix: Using a flawless POST connection with exact stream properties
                 const response = await fetch(apiBase, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         messages: activeMessages,
-                        model: chosenModel
+                        model: "openai"
                     })
                 });
 
-                if (!response.ok) throw new Error("Backend system error");
+                if (!response.ok) throw new Error("Stream break fault");
 
                 const aiReply = await response.text();
                 loader.style.display = "none";
                 
-                // Track conversation history flawlessly so he can remember past context
                 chatHistory.push({ role: "user", content: userText });
                 chatHistory.push({ role: "assistant", content: aiReply });
                 
@@ -348,7 +366,7 @@
 
             } catch (error) {
                 loader.style.display = "none";
-                appendBubble("Ah damn bro, the server matrix flickered. Try hitting send again!", 'jeeva-row');
+                appendBubble("Ah damn bro, the network matrix flickered. Hit send again to override!", 'jeeva-row');
                 console.error(error);
             }
         }
@@ -357,15 +375,11 @@
             isAdminActive = true;
             isAdminSmart = false;
             document.body.className = "admin-theme";
-            document.getElementById('coreLabel').innerText = "⚠️ ADMIN ROOT CONSOLE OVERDRIVE";
+            document.getElementById('coreLabel').innerText = "⚠️ SOVEREIGN OVERDRIVE ACCESS";
             document.getElementById('switcherPanel').style.opacity = "0.2";
             document.getElementById('loadingText').innerText = "🔴 Overriding Neural Matrix Pipeline...";
             
-            showHelpDirectory();
-        }
-
-        function showHelpDirectory() {
-            appendBubble("[SYSTEM CORE]: INTERNAL ROOT CHANNELS UNLOCKED.\n\nExclusive Utilities:\n• /see or /help - Display this command cheat sheet\n• /smart - Toggle Extra Smart Gold Core Engine\n• /scramble - Generate randomized official 3x3 cube sequence\n• /timer - Toggle localized task stopwatch\n• /stats - Review network stack bytes\n• /clear - Wipe current log buffer\n• /exit - Exit secure bypass layer", 'jeeva-row', true);
+            appendBubble("[SYSTEM ACCESS GRANTED]: DEVELOPER BYPASS CHANNELS OPERATIONAL.\n\nExclusive Overdrive Controls:\n• /see - Display system control matrix layout\n• /smart - Toggle Extra Smart Reasoning Logic\n• /google - Sync global data caches to boost capacity limits\n• /scramble - Fetch randomized 3x3 layout data sequence\n• /matrix - Toggle live digital interface background skin\n• /weather - Pull real-time terminal atmospheric details\n• /timer - Clock specific execution stopwatch times\n• /stats - Review network state variables\n• /clear - Wipe terminal screen buffers\n• /exit - Lock console layers safely", 'jeeva-row', true);
         }
 
         function runAdminAction(commandLine) {
@@ -373,7 +387,7 @@
             const primaryCmd = parts[0].toLowerCase();
             
             if (primaryCmd === '/see' || primaryCmd === '/help') {
-                showHelpDirectory();
+                appendBubble("[SYSTEM ENGINE DIRECTORY]:\n• /smart - Toggle extra smart logic\n• /google - Run data sync indexing\n• /scramble - Generate 3x3 metrics\n• /matrix - Toggle background stream visualizer\n• /weather - Display active local weather matrices\n• /timer - Toggle localized task stopwatch\n• /stats - Check text load bytes\n• /clear - Wipe screen\n• /exit - Return to standard user framework", 'jeeva-row', true);
             }
             else if (primaryCmd === '/exit') {
                 isAdminActive = false;
@@ -382,21 +396,30 @@
                 document.body.className = "";
                 document.getElementById('switcherPanel').style.opacity = "1";
                 setMode(currentMode);
-                appendBubble("[SYSTEM]: Secure root session closed safely.", 'jeeva-row', true);
+                appendBubble("[SYSTEM]: Secure root session locked down safely.", 'jeeva-row', true);
             } 
             else if (primaryCmd === '/smart') {
                 isAdminSmart = !isAdminSmart;
                 if (isAdminSmart) {
                     document.body.className = "admin-smart-theme";
-                    document.getElementById('coreLabel').innerText = "✨ ADMIN EXTRA SMART REASONING CORE";
-                    document.getElementById('loadingText').innerText = "✨ Extra Smart logical engines analyzing matrices...";
-                    appendBubble("[⚡ CONSOLE]: EXTRA SMART CORE RE-ROUTE SUCCESSFUL. Deep analysis engines are now primary.", 'jeeva-row', true);
+                    document.getElementById('coreLabel').innerText = "✨ GOLD REASONING CONSOLE ACTIVE";
+                    appendBubble("[⚡ CONSOLE]: EXTRA SMART GOLD RE-ROUTE SUCCESSFUL.", 'jeeva-row', true);
                 } else {
                     document.body.className = "admin-theme";
-                    document.getElementById('coreLabel').innerText = "⚠️ ADMIN ROOT CONSOLE OVERDRIVE";
-                    document.getElementById('loadingText').innerText = "🔴 Overriding Neural Matrix Pipeline...";
-                    appendBubble("[⚡ CONSOLE]: Extra Smart engine offline. Back to standard root frame.", 'jeeva-row', true);
+                    document.getElementById('coreLabel').innerText = "⚠️ SOVEREIGN OVERDRIVE ACCESS";
+                    appendBubble("[⚡ CONSOLE]: Standard root overdrive restored.", 'jeeva-row', true);
                 }
+            }
+            else if (primaryCmd === '/google') {
+                capacityLevel += Math.floor(Math.random() * 800) + 400;
+                appendBubble(`[🛰️ GOOGLE MATRIX SEARCH SYNC]:\nConnecting to global indices... Fetching new learning sets... Done!\n Jeeva capacity increased to ${capacityLevel}! We are getting stronger, bro!`, 'jeeva-row', true);
+            }
+            else if (primaryCmd === '/matrix') {
+                document.body.classList.toggle('matrix-active');
+                appendBubble("[🎨 INTERFACE]: Toggled digital background stream theme frame.", 'jeeva-row', true);
+            }
+            else if (primaryCmd === '/weather') {
+                appendBubble("[🌤️ TERMINAL WEATHER REPORT]:\nLocation detected: Chennai, IN.\nCurrent Status: Standard local climate records stable. Pipeline processing cleanly.", 'jeeva-row', true);
             }
             else if (primaryCmd === '/scramble') {
                 const moves = ["R", "L", "U", "D", "F", "B"];
@@ -410,53 +433,43 @@
                     scramble.push(move + mod);
                     lastMove = move;
                 }
-                appendBubble(`[🎲 3x3 SCRAMBLE GENERATOR]:\n${scramble.join(" ")}`, 'jeeva-row', true);
+                appendBubble(`[🎲 OFFICIAL 3x3 GENERATOR]:\n${scramble.join(" ")}`, 'jeeva-row', true);
             }
             else if (primaryCmd === '/timer') {
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
-                    appendBubble(`[⏱️ TIMER STOPPED]: Total runtime clocked at ${timerSeconds}s`, 'jeeva-row', true);
+                    appendBubble(`[⏱️ STOPWATCH STOPPED]: Clocked at ${timerSeconds}s`, 'jeeva-row', true);
                 } else {
                     timerSeconds = 0;
-                    appendBubble("[⏱️ TIMER STARTED]: Log stopwatch active... Type /timer again to stop!", 'jeeva-row', true);
+                    appendBubble("[⏱️ STOPWATCH ACTIVE]: Tracking task seconds...", 'jeeva-row', true);
                     timerInterval = setInterval(() => { timerSeconds++; }, 1000);
                 }
             }
             else if (primaryCmd === '/clear') {
                 document.getElementById('chatLogs').innerHTML = "";
                 chatHistory = [];
-                appendBubble("[SYSTEM]: Visual elements and network history logs purged.", 'jeeva-row', true);
+                appendBubble("[SYSTEM]: Logs cleared.", 'jeeva-row', true);
             } 
             else if (primaryCmd === '/stats') {
                 const textLoad = JSON.stringify(chatHistory).length;
-                appendBubble(`[CORE STATUS DATA]:\n• Message Stack: ${chatHistory.length}\n• Text Weight: ${textLoad} indices\n• Smart Core Lock: ${isAdminSmart}`, 'jeeva-row', true);
-            } 
-            else if (primaryCmd === '/system') {
-                const newPrompt = parts.slice(1).join(' ');
-                if (!newPrompt) {
-                    appendBubble("[ERROR]: System text context must be populated.", 'jeeva-row', true);
-                } else {
-                    customSystemOverride = newPrompt;
-                    appendBubble(`[OVERRIDE SET]: Applied instructions:\n"${newPrompt}"`, 'jeeva-row', true);
-                }
-            } 
+                appendBubble(`[STATUS DATA]:\n• Message Stack: ${chatHistory.length}\n• Text Index Size: ${textLoad} indices\n• Engine Capacity: Max Override Level ${capacityLevel}`, 'jeeva-row', true);
+            }
             else {
-                appendBubble(`[ERROR]: Directory command '${primaryCmd}' non-existent. Type /see to check options menu.`, 'jeeva-row', true);
+                appendBubble(`[ERROR]: Command '${primaryCmd}' not found. Type /see for options.`, 'jeeva-row', true);
             }
         }
 
-        function appendBubble(text, rowClass, isAdminAlert = false) {
+        function appendBubble(text, rowClass, isAdminAlert = false, isMario = false) {
             const logs = document.getElementById('chatLogs');
             const row = document.createElement('div');
             row.className = `row ${rowClass}`;
             
-            // Format bold text markdown cleanly
-            let cleanText = text.replace(/\*\*(.*?)\*\"/g, '<b>$1</b>'); 
-            cleanText = cleanText.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+            let cleanText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
             
             let bubbleClass = "bubble";
             if (isAdminAlert) bubbleClass += " admin-alert-bubble";
+            if (isMario) bubbleClass += " mario-bubble";
             
             row.innerHTML = `<div class="${bubbleClass}">${cleanText}</div>`;
             logs.appendChild(row);
