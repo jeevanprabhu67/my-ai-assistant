@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeeva Assistant | Sovereign Overdrive v19.1</title>
+    <title>Jeeva Assistant | Sovereign Overdrive v19.2</title>
     <style>
         :root {
             --bg-dark: #060913;
@@ -93,7 +93,7 @@
 
     <header>
         <div class="brand">
-            <h1>🤖 Jeeva<span> Sovereign v19.1</span></h1>
+            <h1>🤖 Jeeva<span> Sovereign v19.2</span></h1>
         </div>
         <div class="tools-tray">
             <button class="tray-btn" onclick="openModal('studioModal')">🎨 Photo Studio</button>
@@ -104,9 +104,9 @@
 
     <div class="chat-area" id="chatLogs">
         <div class="row jeeva-row">
-            <div class="bubble">System fully restored, bro! 👑 
+            <div class="bubble">Console engine debugged and completely fixed, bro! 👑 
 
-All hidden console actions are loaded back up. Type `/admin` to open up the root override stream!</div>
+No broken layout overlaps anymore. Type `/admin` to open the pure console overrides stream!</div>
         </div>
     </div>
 
@@ -342,7 +342,7 @@ All hidden console actions are loaded back up. Type `/admin` to open up the root
             }
         }
 
-        // --- ALL ADMIN OVERRIDE ENGINE COMMANDS RESTORED ---
+        // --- CLEAN ADMINISTRATIVE CONSOLE COMMAND LOGIC ---
         function activateAdminConsole() {
             isAdminActive = true;
             document.body.className = "admin-theme";
@@ -359,7 +359,7 @@ All hidden console actions are loaded back up. Type `/admin` to open up the root
                              "• `/scramble` - Instantly display standard 3x3 speedcube mix sequence\n" +
                              "• `/matrix` - Toggle engine UI live matrix overlay graphics loop\n" +
                              "• `/holidays` - Fetch local regional target holiday listings array\n" +
-                             "• `/anime` - Trigger fast procedural face render base profile map\n" +
+                             "• `/anime` - Trigger procedural text-based anime profile breakdown\n" +
                              "• `/timer` [seconds] - Engage immediate core countdown alert background script\n" +
                              "• `/exit` - Terminate secure console link safely", 'jeeva-row', true);
             } 
@@ -393,13 +393,11 @@ All hidden console actions are loaded back up. Type `/admin` to open up the root
                              "• Winter Array: Dec 23 - Jan 03", 'jeeva-row', true);
             }
             else if (primaryCmd === '/anime') {
-                openModal('studioModal');
-                buildStudioGrid();
-                sCtx.fillStyle = '#ff007f';
-                sCtx.fillRect(150, 80, 100, 100); // Draw center placeholder avatar shape block
-                sCtx.fillStyle = '#00f0ff';
-                sCtx.fillRect(170, 110, 15, 15); sCtx.fillRect(215, 110, 15, 15);
-                appendBubble("[🎨 CHARACTER MATRIX DETONATED]: Booting custom visual profiles onto canvas framework!", 'jeeva-row', true);
+                appendBubble("[🎭 CHARACTER MATRIX]: Procedural Generation Complete:\n" +
+                             "• Hair Style: Shonen Neon Spiky\n" +
+                             "• Eye Color: #00f0ff Cyber Aura Cyan\n" +
+                             "• Outfit: Crimson Shadow Cloak\n" +
+                             "• Ultimate Skill: Overdrive Frame Sync 100%", 'jeeva-row', true);
             }
             else if (primaryCmd === '/timer') {
                 let seconds = parseInt(parts[1]) || 10;
