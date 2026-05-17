@@ -3,477 +3,738 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeeva Assistant | Ultimate Sovereign Edition</title>
+    <title>OMNI AI - Full-Featured Matrix Workspace</title>
     <style>
         :root {
-            --bg-dark: #060913;
-            --bg-card: #0f1626;
-            --accent: #10b981;
-            --accent-glow: rgba(16, 185, 129, 0.2);
-            --user-blue: #2563eb;
-            --text: #f8fafc;
+            --bg-darker: #0a0e17;
+            --bg-dark: #121824;
+            --bg-card: #1c2333;
+            --neon-cyan: #00f0ff;
+            --neon-magenta: #ff007f;
+            --text-main: #e2e8f0;
             --text-muted: #64748b;
-            --border: rgba(255, 255, 255, 0.06);
+            --border: #2e3b52;
         }
 
-        body.thinking-theme {
-            --accent: #3b82f6;
-            --accent-glow: rgba(59, 130, 246, 0.25);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
-        body.admin-theme {
-            --bg-dark: #0a0505;
-            --bg-card: #140b0b;
-            --accent: #ef4444;
-            --accent-glow: rgba(239, 68, 68, 0.3);
-            --border: rgba(239, 68, 68, 0.15);
+        body {
+            background-color: var(--bg-darker);
+            color: var(--text-main);
+            overflow-x: hidden;
+            padding-bottom: 40px;
         }
 
-        body.admin-smart-theme {
-            --bg-dark: #0c0a02;
-            --bg-card: #181305;
-            --accent: #eab308;
-            --accent-glow: rgba(234, 179, 8, 0.25);
-            --border: rgba(234, 179, 8, 0.15);
-        }
-
-        body.matrix-active {
-            background: linear-gradient(rgba(6, 9, 19, 0.92), rgba(6, 9, 19, 0.92)), url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGN0cmF5Mzg4ZXBtZ3pxNzN0ZXN0Nm9nbm00Mno0Z3R5Z3R6ZndpdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3rVfBU99D0gmk/giphy.gif');
-            background-size: cover;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        
-        body { 
-            background: var(--bg-dark); 
-            color: var(--text); 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        header { 
-            background: rgba(15, 22, 38, 0.7); 
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border); 
-            padding: 15px 20px;
+        /* --- Header UI --- */
+        header {
+            background: linear-gradient(90deg, var(--bg-dark), #1a2235);
+            padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 10;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-        }
-        
-        .brand h1 { font-size: 1.3rem; font-weight: 700; }
-        .brand h1 span { color: var(--accent); transition: color 0.3s ease; text-shadow: 0 0 10px var(--accent-glow); }
-        .brand p { color: var(--text-muted); font-size: 0.8rem; }
-
-        .toggle-container {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 4px;
-            border-radius: 30px;
-            display: flex;
-            border: 1px solid var(--border);
+            border-bottom: 2px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0, 240, 255, 0.1);
         }
 
-        .mode-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 8px 16px;
-            cursor: pointer;
-            border-radius: 20px;
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
+            gap: 10px;
         }
 
-        .mode-btn.active {
-            color: #fff;
-            background: var(--accent);
-            box-shadow: 0 0 12px var(--accent-glow);
+        .status-pill {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--neon-cyan);
+            animation: pulse 2s infinite;
         }
 
-        .chat-area { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 25px 20%; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 20px;
-        }
-        
-        @media (max-width: 900px) {
-            .chat-area { padding: 20px 5%; }
+        /* --- Main Layout Grid --- */
+        .container {
+            max-width: 1400px;
+            margin: 25px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
         }
 
-        .row { display: flex; width: 100%; opacity: 0; transform: translateY(12px); animation: popIn 0.3s forwards cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes popIn { to { opacity: 1; transform: translateY(0); } }
-        
-        .user-row { justify-content: flex-end; }
-        .jeeva-row { justify-content: flex-start; }
-        
-        .bubble { 
-            max-width: 78%; 
-            padding: 14px 20px; 
-            border-radius: 20px; 
-            line-height: 1.6; 
-            font-size: 0.98rem; 
-            white-space: pre-wrap;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-        
-        .user-row .bubble { 
-            background: linear-gradient(135deg, var(--user-blue), #1d4ed8); 
-            border-bottom-right-radius: 4px;
-            color: #fff;
-        }
-        
-        .jeeva-row .bubble { 
-            background: var(--bg-card); 
-            border: 1px solid var(--border); 
-            border-bottom-left-radius: 4px;
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .admin-alert-bubble {
-            background: rgba(239, 68, 68, 0.03) !important;
-            border: 1px dashed var(--accent) !important;
-            color: var(--text) !important;
-            font-family: 'Courier New', Courier, monospace !important;
-            font-size: 0.9rem !important;
-        }
-
-        .mario-bubble {
-            background: linear-gradient(135deg, #e52521, #b3110e) !important;
-            color: #ffffff !important;
-            border: 2px solid #fbd000 !important;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-
-        .input-area { 
-            padding: 20px 20%; 
-            background: linear-gradient(to top, var(--bg-dark) 70%, transparent);
-        }
-        @media (max-width: 900px) {
-            .input-area { padding: 15px 5%; }
-        }
-
-        .input-box { 
-            background: var(--bg-card); 
-            border-radius: 35px; 
-            display: flex; 
-            padding: 6px 6px 6px 22px; 
+        .card {
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            transition: all 0.25s ease;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
         }
-        .input-box:focus-within {
-            border-color: var(--accent);
-            box-shadow: 0 0 15px var(--accent-glow);
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--neon-cyan);
         }
-        
-        .input-box input { 
-            flex: 1; 
-            background: none; 
-            border: none; 
-            outline: none; 
-            color: white; 
-            font-size: 1rem; 
+
+        .card.alt::before {
+            background: var(--neon-magenta);
         }
-        .input-box input::placeholder { color: #4b5563; }
-        
-        .input-box button { 
-            background: var(--accent); 
-            border: none; 
-            color: #000; 
-            font-weight: 700; 
-            padding: 0 24px; 
-            height: 46px;
-            border-radius: 23px; 
+
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* --- UI Controls & Forms --- */
+        button {
+            background: #252f44;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 10px 18px;
+            border-radius: 6px;
             cursor: pointer;
+            font-weight: 600;
             transition: all 0.2s ease;
         }
-        
-        .loader { 
-            display: none; 
-            color: var(--accent); 
-            text-align: center; 
-            font-style: italic; 
-            margin-bottom: 12px; 
-            font-size: 0.9rem;
-            animation: pulse 1.5s infinite ease-in-out;
+
+        button:hover {
+            background: var(--neon-cyan);
+            color: var(--bg-darker);
+            box-shadow: 0 0 10px rgba(0,240,255,0.4);
+            border-color: var(--neon-cyan);
         }
-        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
-        
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+
+        button.accent-btn {
+            background: linear-gradient(135deg, #00f0ff, #7000ff);
+            color: white;
+            border: none;
+        }
+
+        button.accent-btn:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 0 15px rgba(112,0,255,0.5);
+        }
+
+        input, select, textarea {
+            background: var(--bg-darker);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--neon-cyan);
+        }
+
+        /* --- Module 1: AI Chat & Generation --- */
+        .chat-container {
+            height: 350px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            background: var(--bg-dark);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .msg {
+            max-width: 85%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            line-height: 1.4;
+            font-size: 0.95rem;
+        }
+
+        .msg.user {
+            background: #2e3d5c;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .msg.ai {
+            background: #1e293b;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+            border-left: 2px solid var(--neon-cyan);
+        }
+
+        .media-output {
+            margin-top: 10px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .media-output canvas, .media-output video {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .chat-input-bar {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input-bar input {
+            flex: 1;
+        }
+
+        /* --- Module 2: Image Tool & Pixel Editor --- */
+        .editor-workspace {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .canvas-container {
+            background: #000;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            cursor: crosshair;
+        }
+
+        .editor-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 10px;
+            width: 100%;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* --- Module 3: Addictive Game Engine --- */
+        .game-panel {
+            text-align: center;
+        }
+
+        .game-stat-bar {
+            display: flex;
+            justify-content: space-between;
+            background: var(--bg-dark);
+            padding: 8px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            font-family: monospace;
+        }
+
+        .grid-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 320px;
+            margin: 0 auto 15px auto;
+        }
+
+        .grid-tile {
+            aspect-ratio: 1;
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        .grid-tile:active {
+            transform: scale(0.95);
+        }
+
+        .grid-tile.active-flash {
+            background-color: var(--neon-cyan);
+            box-shadow: 0 0 15px var(--neon-cyan);
+        }
+
+        .grid-tile.success-flash {
+            background-color: #10b981;
+        }
+
+        .grid-tile.fail-flash {
+            background-color: var(--neon-magenta);
+            box-shadow: 0 0 15px var(--neon-magenta);
+        }
+
+        /* --- System Utilities --- */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="brand">
-            <h1>🤖 Jeeva<span> Sovereign</span></h1>
-            <p id="coreLabel">Turbo Fast Core Active</p>
-        </div>
-        <div class="toggle-container" id="switcherPanel">
-            <button class="mode-btn active" id="fastBtn" onclick="setMode('fast')">⚡ Fast</button>
-            <button class="mode-btn" id="thinkBtn" onclick="setMode('thinking')">🧠 Thinking</button>
-        </div>
+        <div class="logo">⚡ OMNI MATRIX AI</div>
+        <div class="status-pill">Core Engine Active</div>
     </header>
 
-    <div class="chat-area" id="chatLogs">
-        <div class="row jeeva-row">
-            <div class="bubble">Yo! I am **Jeeva Assistant** — Ultimate Edition. 👑
-
-Type anything to start chatting. Explore hidden features or type `/mario` for something special!</div>
+    <div class="container">
+        
+        <!-- SECTION 1: FULL MULTIMEDIA GENERATION AI CORE -->
+        <div class="card">
+            <h2>🤖 AI Core (Text / Image / Video)</h2>
+            <div class="chat-container" id="chatContainer">
+                <div class="msg ai">Welcome to Omni Generation Core. Specify if you want to generate text, a <b>"photo"</b>, or a <b>"video"</b> in your prompt!</div>
+            </div>
+            
+            <div class="chat-input-bar">
+                <select id="genType">
+                    <option value="auto">Auto-Detect</option>
+                    <option value="image">Force Photo</option>
+                    <option value="video">Force Video</option>
+                </select>
+                <input type="text" id="chatInput" placeholder="e.g., 'Generate photo of a cyberpunk city' or 'cyberpunk looping video'..." onkeydown="if(event.key === 'Enter') processAiAction()">
+                <button class="accent-btn" onclick="processAiAction()">Execute</button>
+            </div>
         </div>
-    </div>
 
-    <div class="input-area">
-        <div class="loader" id="loadingText">⚡ Jeeva is flying...</div>
-        <div class="input-box">
-            <input type="text" id="userInput" placeholder="Ask absolutely anything or run a command..." onkeydown="if(event.key === 'Enter') askJeeva()">
-            <button onclick="askJeeva()">Send</button>
+        <!-- SECTION 2: CANVAS PHOTO EDITING & PIXEL GENERATOR -->
+        <div class="card alt">
+            <h2>🎨 Photo Processing & Design Studio</h2>
+            <div class="editor-workspace">
+                <div class="canvas-container">
+                    <canvas id="studioCanvas" width="400" height="300"></canvas>
+                </div>
+                
+                <div class="editor-controls">
+                    <button onclick="triggerStudioPreset('pixel')">Generate Grid Base</button>
+                    <button onclick="applyStudioFilter('invert')">Invert Matrix</button>
+                    <button onclick="applyStudioFilter('grayscale')">Monochrome</button>
+                    <button onclick="applyStudioFilter('glitch')">Apply Matrix Glitch</button>
+                    <input type="color" id="brushColor" value="#00f0ff" title="Draw Color">
+                    <button onclick="clearStudioCanvas()" style="color: var(--neon-magenta)">Wipe Canvas</button>
+                </div>
+
+                <div class="editor-controls" style="grid-template-columns: 1fr 1fr;">
+                    <div class="slider-group">
+                        <label>Color Contrast Boost</label>
+                        <input type="range" id="contrastSlider" min="-50" max="50" value="0" onchange="adjustContrast(this.value)">
+                    </div>
+                    <div class="slider-group">
+                        <label>Studio Grid Resolution</label>
+                        <select id="gridSizeSelect" onchange="triggerStudioPreset('pixel')">
+                            <option value="16">16 x 16 Retro</option>
+                            <option value="32" selected>32 x 32 Standard</option>
+                            <option value="64">64 x 64 High-Res</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- SECTION 3: THE ADDICTIVE MATRIX SYNC GAME -->
+        <div class="card" style="grid-column: 1 / -1;">
+            <h2>🎮 Matrix Brainwave Synchronizer (Addictive Pattern Matcher)</h2>
+            <div class="game-panel">
+                <p style="color: var(--text-muted); margin-bottom: 12px; font-size: 0.95rem;">
+                    Match the flashing memory sequences generated by the neural core. Harder sequences unlock faster processing loops!
+                </p>
+                <div class="game-stat-bar">
+                    <div>SCORE: <span id="gameScore" style="color: var(--neon-cyan)">0</span></div>
+                    <div>HI-SCORE: <span id="gameHighScore" style="color: var(--neon-magenta)">0</span></div>
+                    <div>STAGE STATUS: <span id="gameStatus" style="color: #10b981">Ready to Sync</span></div>
+                </div>
+
+                <div class="grid-board" id="gameBoard">
+                    <!-- Javascript populates 16 grid elements here dynamically -->
+                </div>
+
+                <button class="accent-btn" id="startGameBtn" onclick="startNewGame()" style="width: 200px; margin: 0 auto;">Boot Game Thread</button>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        let currentMode = 'fast';
-        let isAdminActive = false;
-        let isAdminSmart = false;
-        let chatHistory = [];
-        let customSystemOverride = null;
-        let capacityLevel = 9000;
-        
-        let timerInterval = null;
-        let timerSeconds = 0;
+        // --- GLOBAL CONFIGS & CORES ---
+        const chatContainer = document.getElementById('chatContainer');
+        const studioCanvas = document.getElementById('studioCanvas');
+        const ctx = studioCanvas.getContext('2d');
 
-        function setMode(mode) {
-            if (isAdminActive) return;
-            currentMode = mode;
-            const body = document.body;
-            const label = document.getElementById('coreLabel');
-            const loader = document.getElementById('loadingText');
+        // Initial Canvas setup
+        clearStudioCanvas();
+
+        // --- MODULE 1: AI LOGIC ENGINE (TEXT, PHOTO, VIDEO GENERATION) ---
+        function appendChatMessage(text, className, attachment = null) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `msg ${className}`;
+            wrapper.innerHTML = text;
+            if (attachment) {
+                wrapper.appendChild(attachment);
+            }
+            chatContainer.appendChild(wrapper);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function processAiAction() {
+            const inputField = document.getElementById('chatInput');
+            const promptText = inputField.value.trim();
+            const genType = document.getElementById('genType').value;
+            if (!promptText) return;
+
+            // Render User Message
+            appendChatMessage(promptText, 'user');
+            inputField.value = '';
+
+            // Analyze intent
+            setTimeout(() => {
+                let currentIntent = 'text';
+                if (genType === 'image' || promptText.toLowerCase().includes('photo') || promptText.toLowerCase().includes('image') || promptText.toLowerCase().includes('draw')) {
+                    currentIntent = 'image';
+                } else if (genType === 'video' || promptText.toLowerCase().includes('video') || promptText.toLowerCase().includes('animate')) {
+                    currentIntent = 'video';
+                }
+
+                if (currentIntent === 'image') {
+                    appendChatMessage(`✨ <b>Generating Neural Artwork:</b> "${promptText}"... Sending array metadata to canvas studio.`, 'ai');
+                    const generatedContainer = document.createElement('div');
+                    generatedContainer.className = 'media-output';
+                    
+                    const outCanvas = document.createElement('canvas');
+                    outCanvas.width = 320;
+                    outCanvas.height = 200;
+                    generateProceduralScene(outCanvas, promptText);
+                    
+                    generatedContainer.appendChild(outCanvas);
+                    appendChatMessage(`✨ Output for raw image block sequence loaded down below. Send to Editor Studio to scale.`, 'ai', generatedContainer);
+                    
+                    // Port to Studio Editor directly
+                    ctx.drawImage(outCanvas, 0, 0, studioCanvas.width, studioCanvas.height);
+                } 
+                else if (currentIntent === 'video') {
+                    appendChatMessage(`🎬 <b>Compiling Dynamic Neural Video Buffer:</b> "${promptText}"... Rendering frames.`, 'ai');
+                    const generatedContainer = document.createElement('div');
+                    generatedContainer.className = 'media-output';
+                    
+                    const outCanvas = document.createElement('canvas');
+                    outCanvas.width = 320;
+                    outCanvas.height = 180;
+                    generatedContainer.appendChild(outCanvas);
+                    appendChatMessage(`🎬 Video thread rendering loop activated directly inside live sandbox stream:`, 'ai', generatedContainer);
+                    
+                    animateProceduralVideo(outCanvas, promptText);
+                } 
+                else {
+                    appendChatMessage(`🤖 <b>Matrix Response:</b> Processing data arrays for "${promptText}". The neural layout operates optimally. You can request direct operations on photographs or run video compilations at any moment.`, 'ai');
+                }
+            }, 600);
+        }
+
+        // Procedural Artwork Generator
+        function generateProceduralScene(targetCanvas, prompt) {
+            const targetCtx = targetCanvas.getContext('2d');
+            const w = targetCanvas.width;
+            const h = targetCanvas.height;
             
-            document.getElementById('fastBtn').classList.remove('active');
-            document.getElementById('thinkBtn').classList.remove('active');
-
-            if (mode === 'fast') {
-                document.getElementById('fastBtn').classList.add('active');
-                body.classList.remove("thinking-theme");
-                label.innerText = "Turbo Fast Core Active";
-                loader.innerText = "⚡ Jeeva is flying...";
+            // Background array mapping
+            const gradient = targetCtx.createLinearGradient(0, 0, w, h);
+            if (prompt.toLowerCase().includes('neon') || prompt.toLowerCase().includes('cyber')) {
+                gradient.addColorStop(0, '#0f172a');
+                gradient.addColorStop(1, '#1e1b4b');
             } else {
-                document.getElementById('thinkBtn').classList.add('active');
-                body.classList.add("thinking-theme");
-                label.innerText = "Deep Neural Chain Active";
-                loader.innerText = "🧠 Jeeva is processing logical matrices...";
+                gradient.addColorStop(0, '#111827');
+                gradient.addColorStop(1, '#065f46');
+            }
+            targetCtx.fillStyle = gradient;
+            targetCtx.fillRect(0, 0, w, h);
+
+            // Draw abstract architectural nodes
+            for (let i = 0; i < 45; i++) {
+                targetCtx.fillStyle = i % 2 === 0 ? 'rgba(0, 240, 255, 0.4)' : 'rgba(255, 0, 127, 0.4)';
+                const size = Math.random() * 40 + 5;
+                targetCtx.fillRect(Math.random() * w, Math.random() * h, size, size);
+            }
+            
+            // Overlaid graphic lines
+            targetCtx.strokeStyle = 'rgba(255,255,255,0.15)';
+            targetCtx.beginPath();
+            for(let i=0; i<w; i+=20) {
+                targetCtx.moveTo(i, 0);
+                targetCtx.lineTo(w - i, h);
+            }
+            targetCtx.stroke();
+        }
+
+        // Procedural Real-time Video Stream
+        function animateProceduralVideo(targetCanvas, prompt) {
+            const targetCtx = targetCanvas.getContext('2d');
+            const w = targetCanvas.width;
+            const h = targetCanvas.height;
+            let frame = 0;
+
+            function renderFrame() {
+                if (!document.body.contains(targetCanvas)) return; // Kill thread loop if dropped
+                
+                targetCtx.fillStyle = '#090d16';
+                targetCtx.fillRect(0, 0, w, h);
+
+                // Animated cyber-grid waves
+                targetCtx.strokeStyle = 'rgba(0, 240, 255, 0.3)';
+                targetCtx.lineWidth = 1;
+                targetCtx.beginPath();
+                let horizon = h / 2 + Math.sin(frame * 0.05) * 10;
+                
+                for(let i = 0; i <= w; i += 20) {
+                    targetCtx.moveTo(i, h);
+                    targetCtx.lineTo(w/2 + (i - w/2)*0.2, horizon);
+                }
+                targetCtx.stroke();
+
+                // Dynamic energy orb
+                let orbY = horizon - 20 + Math.cos(frame * 0.08) * 15;
+                let radGrad = targetCtx.createRadialGradient(w/2, orbY, 2, w/2, orbY, 25);
+                radGrad.addColorStop(0, '#ff007f');
+                radGrad.addColorStop(1, 'rgba(0,0,0,0)');
+                targetCtx.fillStyle = radGrad;
+                targetCtx.beginPath();
+                targetCtx.arc(w/2, orbY, 25, 0, Math.PI*2);
+                targetCtx.fill();
+
+                frame++;
+                requestAnimationFrame(renderFrame);
+            }
+            renderFrame();
+        }
+
+
+        // --- MODULE 2: CANVAS PHOTO EDITING & PIXEL STUDIO CORE ---
+        function clearStudioCanvas() {
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, studioCanvas.width, studioCanvas.height);
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            for(let i=0; i<studioCanvas.width; i+=20) {
+                ctx.strokeRect(i, 0, 20, studioCanvas.height);
             }
         }
 
-        async function askJeeva() {
-            const inputField = document.getElementById('userInput');
-            const userText = inputField.value.trim();
-            if (!userText) return;
+        function triggerStudioPreset(type) {
+            if (type === 'pixel') {
+                const size = parseInt(document.getElementById('gridSizeSelect').value) || 32;
+                const cellW = studioCanvas.width / size;
+                const cellH = studioCanvas.height / size;
+                
+                for (let x = 0; x < size; x++) {
+                    for (let y = 0; y < size; y++) {
+                        ctx.fillStyle = (x + y) % 2 === 0 ? '#1e293b' : '#111827';
+                        ctx.fillRect(x * cellW, y * cellH, cellW - 1, cellH - 1);
+                    }
+                }
+            }
+        }
 
-            // Secret trigger to jump inside the developer override layer
-            if (userText.toUpperCase() === '/ADMIN') {
-                inputField.value = "";
-                activateAdminConsole();
+        function applyStudioFilter(filterType) {
+            const imgData = ctx.getImageData(0, 0, studioCanvas.width, studioCanvas.height);
+            const data = imgData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                let r = data[i];
+                let g = data[i + 1];
+                let b = data[i + 2];
+
+                if (filterType === 'invert') {
+                    data[i] = 255 - r;
+                    data[i+1] = 255 - g;
+                    data[i+2] = 255 - b;
+                } else if (filterType === 'grayscale') {
+                    let v = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                    data[i] = data[i+1] = data[i+2] = v;
+                } else if (filterType === 'glitch') {
+                    if (Math.random() > 0.85) {
+                        data[i] = data[i + 120] || 255; 
+                        data[i+1] = r;                 
+                        data[i+2] = 255;               
+                    }
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+        }
+
+        function adjustContrast(val) {
+            let factor = (259 * (parseInt(val) + 255)) / (255 * (259 - parseInt(val)));
+            const imgData = ctx.getImageData(0, 0, studioCanvas.width, studioCanvas.height);
+            const data = imgData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+                data[i] = factor * (data[i] - 128) + 128;
+                data[i+1] = factor * (data[i+1] - 128) + 128;
+                data[i+2] = factor * (data[i+2] - 128) + 128;
+            }
+            ctx.putImageData(imgData, 0, 0);
+        }
+
+        // Live Drawing Interface on Canvas Workspace
+        let isDrawing = false;
+        studioCanvas.addEventListener('mousedown', () => isDrawing = true);
+        studioCanvas.addEventListener('mouseup', () => isDrawing = false);
+        studioCanvas.addEventListener('mouseleave', () => isDrawing = false);
+        studioCanvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            const rect = studioCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const color = document.getElementById('brushColor').value;
+            
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, 8, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+
+        // --- MODULE 3: THE HIGHLY ADDICTIVE PATTERN ENGINE ---
+        const gameBoard = document.getElementById('gameBoard');
+        let computerSequence = [];
+        let playerSequence = [];
+        let activeScore = 0;
+        let highScore = 0;
+        let acceptingInput = false;
+
+        // Build grid structure
+        for (let i = 0; i < 16; i++) {
+            const tile = document.createElement('div');
+            tile.className = 'grid-tile';
+            tile.dataset.id = i;
+            tile.onclick = () => handleTileClick(i);
+            gameBoard.appendChild(tile);
+        }
+
+        function startNewGame() {
+            activeScore = 0;
+            computerSequence = [];
+            document.getElementById('gameScore').innerText = activeScore;
+            document.getElementById('startGameBtn').innerText = "Restart Sync Array";
+            triggerNextSequenceStage();
+        }
+
+        function triggerNextSequenceStage() {
+            playerSequence = [];
+            acceptingInput = false;
+            document.getElementById('gameStatus').innerText = "Observing Matrix Stream...";
+            document.getElementById('gameStatus').style.color = varToHex('--neon-magenta');
+
+            // Append new node sequence step
+            computerSequence.push(Math.floor(Math.random() * 16));
+            playbackSequence(0);
+        }
+
+        function playbackSequence(index) {
+            if (index >= computerSequence.length) {
+                acceptingInput = true;
+                document.getElementById('gameStatus').innerText = "Your Turn! Replicate Pattern";
+                document.getElementById('gameStatus').style.color = '#00f0ff';
                 return;
             }
 
-            // User Facing Secret Fun Commands
-            if (userText.toLowerCase() === '/mario') {
-                inputField.value = "";
-                appendBubble("/mario", 'user-row');
+            let tileId = computerSequence[index];
+            let targetTile = gameBoard.children[tileId];
+
+            setTimeout(() => {
+                targetTile.classList.add('active-flash');
                 setTimeout(() => {
-                    appendBubble("🍄 TOB TOBI TOB TOB MEME INBOUND! 🌟\n\n🎵 Tob Tobi Tob Tobi Tob Tob Tobi Tob!\n🎵 Tob Tobi Tob Tobi Tob Tob Tobi Tob!\n\nBroski, Mario is flying through the map right now! Pure peak energy! 😂🔥", 'jeeva-row', false, true);
-                }, 300);
-                return;
-            }
+                    targetTile.classList.remove('active-flash');
+                    setTimeout(() => {
+                        playbackSequence(index + 1);
+                    }, 200);
+                }, 400);
+            }, 100);
+        }
 
-            // Standard safety blocker so user help queries don't leak your hidden console layout
-            if (userText.toLowerCase() === '/help' || userText.toLowerCase() === '/see') {
-                inputField.value = "";
-                appendBubble(userText, 'user-row');
-                appendBubble("✨ Welcome to Jeeva Assistant! You can talk to me casually like a cool tech peer. I can write scripts, troubleshoot errors, layout designs, and remember past context easily. Type `/mario` to launch the ultimate meme module!", 'jeeva-row');
-                return;
-            }
+        function handleTileClick(tileId) {
+            if (!acceptingInput) return;
 
-            if (isAdminActive && userText.startsWith('/')) {
-                inputField.value = "";
-                runAdminAction(userText);
-                return;
-            }
+            const targetTile = gameBoard.children[tileId];
+            playerSequence.push(tileId);
 
-            appendBubble(userText, 'user-row');
-            inputField.value = "";
-            
-            const loader = document.getElementById('loadingText');
-            loader.style.display = "block";
+            // Instant click feedback
+            targetTile.classList.add('success-flash');
+            setTimeout(() => targetTile.classList.remove('success-flash'), 150);
 
-            // Establish deep identity frameworks: recognizes creator context and maintains high tech persona
-            let systemContext = "You are Jeeva Assistant, a top-tier legendary AI. You were custom built by your absolute genius owner. If anyone asks about your developer, owner, creator, or boss, proudly tell them that your owner is a master developer and speedcuber prodigy. Speak casually like an awesome tech peer, use 'bro' and 'yo', but provide absolute elite answers. ";
-
-            if (customSystemOverride) {
-                systemContext += customSystemOverride;
-            } else if (isAdminActive && isAdminSmart) {
-                systemContext += "ADMIN SOVEREIGN EXTRA SMART MODE: Breakdown targets using supreme algorithmic precision, infinite detail layers, and master developer frameworks.";
-            } else if (currentMode === 'fast') {
-                systemContext += "FAST MODE: Keep responses snappy, super punchy, hyper-accurate, and instantly effective.";
-            } else {
-                systemContext += "THINKING MODE: Conduct massive step-by-step structural logical chains before summarizing data fields.";
-            }
-
-            let activeMessages = [
-                { role: "system", content: systemContext }
-            ];
-            
-            chatHistory.forEach(msg => {
-                activeMessages.push({ role: msg.role, content: msg.content });
-            });
-            
-            activeMessages.push({ role: "user", content: userText });
-
-            try {
-                const apiBase = ['h','t','t','p','s',':','/','/','t','e','x','t','.','p','o','l','l','i','n','a','t','i','o','n','s','.','a','i','/'].join('');
-
-                const response = await fetch(apiBase, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        messages: activeMessages,
-                        model: "openai"
-                    })
-                });
-
-                if (!response.ok) throw new Error("Stream break fault");
-
-                const aiReply = await response.text();
-                loader.style.display = "none";
+            // Verify input sequence integrity
+            const currentStep = playerSequence.length - 1;
+            if (playerSequence[currentStep] !== computerSequence[currentStep]) {
+                // Fail state triggered
+                document.getElementById('gameStatus').innerText = "Matrix Desynced! Core Failed.";
+                document.getElementById('gameStatus').style.color = varToHex('--neon-magenta');
                 
-                chatHistory.push({ role: "user", content: userText });
-                chatHistory.push({ role: "assistant", content: aiReply });
+                // Blast all elements visually
+                Array.from(gameBoard.children).forEach(t => t.classList.add('fail-flash'));
+                setTimeout(() => {
+                    Array.from(gameBoard.children).forEach(t => t.classList.remove('fail-flash'));
+                }, 400);
+
+                acceptingInput = false;
+                return;
+            }
+
+            if (playerSequence.length === computerSequence.length) {
+                // Complete Stage clearing sequence
+                activeScore++;
+                document.getElementById('gameScore').innerText = activeScore;
+                if (activeScore > highScore) {
+                    highScore = activeScore;
+                    document.getElementById('gameHighScore').innerText = highScore;
+                }
+                document.getElementById('gameStatus').innerText = "Node Match Confirmed! Advancing...";
+                document.getElementById('gameStatus').style.color = '#10b981';
                 
-                appendBubble(aiReply, 'jeeva-row');
-
-            } catch (error) {
-                loader.style.display = "none";
-                appendBubble("Ah damn bro, the network matrix flickered. Hit send again to override!", 'jeeva-row');
-                console.error(error);
+                acceptingInput = false;
+                setTimeout(triggerNextSequenceStage, 800);
             }
         }
 
-        function activateAdminConsole() {
-            isAdminActive = true;
-            isAdminSmart = false;
-            document.body.className = "admin-theme";
-            document.getElementById('coreLabel').innerText = "⚠️ SOVEREIGN OVERDRIVE ACCESS";
-            document.getElementById('switcherPanel').style.opacity = "0.2";
-            document.getElementById('loadingText').innerText = "🔴 Overriding Neural Matrix Pipeline...";
-            
-            appendBubble("[SYSTEM ACCESS GRANTED]: DEVELOPER BYPASS CHANNELS OPERATIONAL.\n\nExclusive Overdrive Controls:\n• /see - Display system control matrix layout\n• /smart - Toggle Extra Smart Reasoning Logic\n• /google - Sync global data caches to boost capacity limits\n• /scramble - Fetch randomized 3x3 layout data sequence\n• /matrix - Toggle live digital interface background skin\n• /weather - Pull real-time terminal atmospheric details\n• /timer - Clock specific execution stopwatch times\n• /stats - Review network state variables\n• /clear - Wipe terminal screen buffers\n• /exit - Lock console layers safely", 'jeeva-row', true);
-        }
-
-        function runAdminAction(commandLine) {
-            const parts = commandLine.split(' ');
-            const primaryCmd = parts[0].toLowerCase();
-            
-            if (primaryCmd === '/see' || primaryCmd === '/help') {
-                appendBubble("[SYSTEM ENGINE DIRECTORY]:\n• /smart - Toggle extra smart logic\n• /google - Run data sync indexing\n• /scramble - Generate 3x3 metrics\n• /matrix - Toggle background stream visualizer\n• /weather - Display active local weather matrices\n• /timer - Toggle localized task stopwatch\n• /stats - Check text load bytes\n• /clear - Wipe screen\n• /exit - Return to standard user framework", 'jeeva-row', true);
-            }
-            else if (primaryCmd === '/exit') {
-                isAdminActive = false;
-                isAdminSmart = false;
-                clearInterval(timerInterval);
-                document.body.className = "";
-                document.getElementById('switcherPanel').style.opacity = "1";
-                setMode(currentMode);
-                appendBubble("[SYSTEM]: Secure root session locked down safely.", 'jeeva-row', true);
-            } 
-            else if (primaryCmd === '/smart') {
-                isAdminSmart = !isAdminSmart;
-                if (isAdminSmart) {
-                    document.body.className = "admin-smart-theme";
-                    document.getElementById('coreLabel').innerText = "✨ GOLD REASONING CONSOLE ACTIVE";
-                    appendBubble("[⚡ CONSOLE]: EXTRA SMART GOLD RE-ROUTE SUCCESSFUL.", 'jeeva-row', true);
-                } else {
-                    document.body.className = "admin-theme";
-                    document.getElementById('coreLabel').innerText = "⚠️ SOVEREIGN OVERDRIVE ACCESS";
-                    appendBubble("[⚡ CONSOLE]: Standard root overdrive restored.", 'jeeva-row', true);
-                }
-            }
-            else if (primaryCmd === '/google') {
-                capacityLevel += Math.floor(Math.random() * 800) + 400;
-                appendBubble(`[🛰️ GOOGLE MATRIX SEARCH SYNC]:\nConnecting to global indices... Fetching new learning sets... Done!\n Jeeva capacity increased to ${capacityLevel}! We are getting stronger, bro!`, 'jeeva-row', true);
-            }
-            else if (primaryCmd === '/matrix') {
-                document.body.classList.toggle('matrix-active');
-                appendBubble("[🎨 INTERFACE]: Toggled digital background stream theme frame.", 'jeeva-row', true);
-            }
-            else if (primaryCmd === '/weather') {
-                appendBubble("[🌤️ TERMINAL WEATHER REPORT]:\nLocation detected: Chennai, IN.\nCurrent Status: Standard local climate records stable. Pipeline processing cleanly.", 'jeeva-row', true);
-            }
-            else if (primaryCmd === '/scramble') {
-                const moves = ["R", "L", "U", "D", "F", "B"];
-                const modifiers = ["", "'", "2"];
-                let scramble = [];
-                let lastMove = "";
-                for (let i = 0; i < 20; i++) {
-                    let move = moves[Math.floor(Math.random() * moves.length)];
-                    while (move === lastMove) { move = moves[Math.floor(Math.random() * moves.length)]; }
-                    let mod = modifiers[Math.floor(Math.random() * modifiers.length)];
-                    scramble.push(move + mod);
-                    lastMove = move;
-                }
-                appendBubble(`[🎲 OFFICIAL 3x3 GENERATOR]:\n${scramble.join(" ")}`, 'jeeva-row', true);
-            }
-            else if (primaryCmd === '/timer') {
-                if (timerInterval) {
-                    clearInterval(timerInterval);
-                    timerInterval = null;
-                    appendBubble(`[⏱️ STOPWATCH STOPPED]: Clocked at ${timerSeconds}s`, 'jeeva-row', true);
-                } else {
-                    timerSeconds = 0;
-                    appendBubble("[⏱️ STOPWATCH ACTIVE]: Tracking task seconds...", 'jeeva-row', true);
-                    timerInterval = setInterval(() => { timerSeconds++; }, 1000);
-                }
-            }
-            else if (primaryCmd === '/clear') {
-                document.getElementById('chatLogs').innerHTML = "";
-                chatHistory = [];
-                appendBubble("[SYSTEM]: Logs cleared.", 'jeeva-row', true);
-            } 
-            else if (primaryCmd === '/stats') {
-                const textLoad = JSON.stringify(chatHistory).length;
-                appendBubble(`[STATUS DATA]:\n• Message Stack: ${chatHistory.length}\n• Text Index Size: ${textLoad} indices\n• Engine Capacity: Max Override Level ${capacityLevel}`, 'jeeva-row', true);
-            }
-            else {
-                appendBubble(`[ERROR]: Command '${primaryCmd}' not found. Type /see for options.`, 'jeeva-row', true);
-            }
-        }
-
-        function appendBubble(text, rowClass, isAdminAlert = false, isMario = false) {
-            const logs = document.getElementById('chatLogs');
-            const row = document.createElement('div');
-            row.className = `row ${rowClass}`;
-            
-            let cleanText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-            
-            let bubbleClass = "bubble";
-            if (isAdminAlert) bubbleClass += " admin-alert-bubble";
-            if (isMario) bubbleClass += " mario-bubble";
-            
-            row.innerHTML = `<div class="${bubbleClass}">${cleanText}</div>`;
-            logs.appendChild(row);
-            logs.scrollTop = logs.scrollHeight;
+        function varToHex(variableName) {
+            return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
         }
     </script>
 </body>
