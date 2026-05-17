@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeeva Assistant | Sovereign Overdrive v19.2</title>
+    <title>Jeeva Assistant | Sovereign Overdrive v19.3</title>
     <style>
         :root {
             --bg-dark: #060913;
@@ -93,7 +93,7 @@
 
     <header>
         <div class="brand">
-            <h1>🤖 Jeeva<span> Sovereign v19.2</span></h1>
+            <h1>🤖 Jeeva<span> Sovereign v19.3</span></h1>
         </div>
         <div class="tools-tray">
             <button class="tray-btn" onclick="openModal('studioModal')">🎨 Photo Studio</button>
@@ -106,7 +106,7 @@
         <div class="row jeeva-row">
             <div class="bubble">Console engine debugged and completely fixed, bro! 👑 
 
-No broken layout overlaps anymore. Type `/admin` to open the pure console overrides stream!</div>
+No commands missing anymore. Type `/admin` to open the pure console overrides stream!</div>
         </div>
     </div>
 
@@ -172,6 +172,7 @@ No broken layout overlaps anymore. Type `/admin` to open the pure console overri
     <script>
         let chatHistory = [];
         let isAdminActive = false;
+        let isSmartReasoningActive = false;
         let capacityLevel = 19000;
 
         async function askJeeva() {
@@ -207,6 +208,10 @@ No broken layout overlaps anymore. Type `/admin` to open the pure console overri
             loader.style.display = "block";
 
             let systemContext = "You are Jeeva Assistant, a top-tier legendary AI app environment built by your master dev owner. Speak casually like an awesome tech peer, use 'bro' and 'yo', but deliver absolute elite answers.";
+            if (isSmartReasoningActive) {
+                systemContext += " EXTRA REASONING MODE ACTIVE: Expand details, break down architecture perfectly, and use advanced logic steps.";
+            }
+            
             let activeMessages = [{ role: "system", content: systemContext }];
             chatHistory.forEach(msg => activeMessages.push({ role: msg.role, content: msg.content }));
             activeMessages.push({ role: "user", content: userText });
@@ -342,7 +347,7 @@ No broken layout overlaps anymore. Type `/admin` to open the pure console overri
             }
         }
 
-        // --- CLEAN ADMINISTRATIVE CONSOLE COMMAND LOGIC ---
+        // --- FULL ADMINISTRATIVE CONSOLE COMMAND LOGIC RESTORED ---
         function activateAdminConsole() {
             isAdminActive = true;
             document.body.className = "admin-theme";
@@ -355,6 +360,7 @@ No broken layout overlaps anymore. Type `/admin` to open the pure console overri
             
             if (primaryCmd === '/see') {
                 appendBubble("[⚠️ RESTORED FULL ADMIN DIRECTORY]:\n" +
+                             "• `/smart` - Toggle extra deep reasoning logic array sequence\n" +
                              "• `/google` - Trigger global remote query data array synchronizer\n" +
                              "• `/scramble` - Instantly display standard 3x3 speedcube mix sequence\n" +
                              "• `/matrix` - Toggle engine UI live matrix overlay graphics loop\n" +
@@ -363,8 +369,12 @@ No broken layout overlaps anymore. Type `/admin` to open the pure console overri
                              "• `/timer` [seconds] - Engage immediate core countdown alert background script\n" +
                              "• `/exit` - Terminate secure console link safely", 'jeeva-row', true);
             } 
+            else if (primaryCmd === '/smart') {
+                isSmartReasoningActive = !isSmartReasoningActive;
+                appendBubble(`[🧠 REASONING CORE]: Deep thinking arrays set to: ${isSmartReasoningActive ? "ON" : "OFF"}. System prompt injected successfully.`, 'jeeva-row', true);
+            }
             else if (primaryCmd === '/exit') {
-                isAdminActive = false; document.body.className = "";
+                isAdminActive = false; document.body.className = ""; isSmartReasoningActive = false;
                 appendBubble("[SYSTEM]: Terminated superuser core link layer.", 'jeeva-row', true);
             } 
             else if (primaryCmd === '/google') {
