@@ -3,361 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jeeva Sovereign Workspace v18</title>
+    <title>Jeeva Assistant | Sovereign Overdrive v19</title>
     <style>
         :root {
-            --bg-darker: #060913;
-            --bg-dark: #0f1626;
-            --bg-card: #141d30;
+            --bg-dark: #060913;
+            --bg-card: #0f1626;
             --accent: #10b981;
             --accent-glow: rgba(16, 185, 129, 0.2);
             --user-blue: #2563eb;
             --text: #f8fafc;
             --text-muted: #64748b;
             --border: rgba(255, 255, 255, 0.06);
-            --neon-magenta: #ff007f;
             --neon-cyan: #00f0ff;
+            --neon-magenta: #ff007f;
         }
 
-        body.admin-theme {
-            --bg-darker: #0a0505;
-            --bg-dark: #140b0b;
-            --accent: #ef4444;
-            --accent-glow: rgba(239, 68, 68, 0.3);
-            --border: rgba(239, 68, 68, 0.15);
-        }
-
+        body.admin-theme { --bg-dark: #0a0505; --bg-card: #140b0b; --accent: #ef4444; --accent-glow: rgba(239, 68, 68, 0.3); --border: rgba(239, 68, 68, 0.15); }
         body.matrix-active {
-            background: linear-gradient(rgba(6, 9, 19, 0.95), rgba(6, 9, 19, 0.95)), url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGN0cmF5Mzg4ZXBtZ3pxNzN0ZXN0Nm9nbm00Mno0Z3R5Z3R6ZndpdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3rVfBU99D0gmk/giphy.gif');
+            background: linear-gradient(rgba(6, 9, 19, 0.93), rgba(6, 9, 19, 0.93)), url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGN0cmF5Mzg4ZXBtZ3pxNzN0ZXN0Nm9nbm00Mno0Z3R5Z3R6ZndpdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3rVfBU99D0gmk/giphy.gif');
             background-size: cover;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: var(--bg-darker); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { background: var(--bg-dark); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; transition: all 0.4s ease; }
 
-        /* --- Header --- */
-        header { 
-            background: rgba(15, 22, 38, 0.8); 
-            backdrop-filter: blur(12px); 
-            border-bottom: 1px solid var(--border); 
-            padding: 12px 20px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            z-index: 10;
-        }
-        .brand h1 { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+        /* --- Classic Header --- */
+        header { background: rgba(15, 22, 38, 0.7); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 10; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4); }
+        .brand h1 { font-size: 1.3rem; font-weight: 700; }
         .brand h1 span { color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
-        .status-pill { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; color: var(--accent); font-weight: bold; }
 
-        /* --- Main App Split Layout --- */
-        .workspace {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 420px 1fr;
-            height: calc(100vh - 58px);
-            overflow: hidden;
-        }
+        /* --- New UI Tools Tray Access Bar --- */
+        .tools-tray { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tray-btn { background: #1e293b; color: var(--text); border: 1px solid var(--border); padding: 8px 14px; font-size: 0.85rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+        .tray-btn:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 10px rgba(0, 240, 255, 0.4); border-color: var(--neon-cyan); }
+        .tray-btn.accent { background: linear-gradient(135deg, var(--neon-cyan), #3b82f6); color: #000; border: none; }
 
-        @media (max-width: 950px) {
-            .workspace { grid-template-columns: 1fr; }
-            .tools-panel { display: none; } /* Focus on chat for mobile mobile layouts */
-        }
+        /* --- Classic Full-Width Chat Area --- */
+        .chat-area { flex: 1; overflow-y: auto; padding: 25px 22%; display: flex; flex-direction: column; gap: 20px; }
+        @media (max-width: 900px) { .chat-area { padding: 20px 5%; } }
 
-        /* --- LEFT SIDE: SEPARATE CHATBOT CONSOLE --- */
-        .chat-sidebar {
-            background: var(--bg-dark);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow: hidden;
-        }
-        .chat-header-info {
-            padding: 15px 20px;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            background: rgba(0,0,0,0.1);
-        }
-        .chat-logs {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .row { display: flex; width: 100%; opacity: 0; transform: translateY(10px); animation: pop 0.25s forwards ease; }
-        @keyframes pop { to { opacity: 1; transform: translateY(0); } }
+        .row { display: flex; width: 100%; opacity: 0; transform: translateY(12px); animation: popIn 0.3s forwards ease; }
+        @keyframes popIn { to { opacity: 1; transform: translateY(0); } }
         .user-row { justify-content: flex-end; }
         .jeeva-row { justify-content: flex-start; }
         
-        .bubble { max-width: 85%; padding: 12px 16px; border-radius: 16px; line-height: 1.5; font-size: 0.92rem; white-space: pre-wrap; word-break: break-word; }
-        .user-row .bubble { background: linear-gradient(135deg, var(--user-blue), #1d4ed8); border-bottom-right-radius: 2px; color: #fff; }
-        .jeeva-row .bubble { background: var(--bg-card); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
-        .admin-bubble { background: rgba(239, 68, 68, 0.03) !important; border: 1px dashed var(--accent) !important; font-family: monospace; font-size: 0.85rem; }
-        .mario-bubble { background: linear-gradient(135deg, #e52521, #b3110e) !important; color: white !important; border: 2px solid #fbd000 !important; font-weight: bold; }
+        .bubble { max-width: 85%; padding: 14px 20px; border-radius: 20px; line-height: 1.6; font-size: 0.98rem; white-space: pre-wrap; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .user-row .bubble { background: linear-gradient(135deg, var(--user-blue), #1d4ed8); border-bottom-right-radius: 4px; color: #fff; }
+        .jeeva-row .bubble { background: var(--bg-card); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+        .admin-alert-bubble { background: rgba(239, 68, 68, 0.03) !important; border: 1px dashed var(--accent) !important; font-family: monospace; font-size: 0.88rem; }
+        .mario-bubble { background: linear-gradient(135deg, #e52521, #b3110e) !important; color: #ffffff !important; border: 2px solid #fbd000 !important; font-weight: bold; }
 
-        .chat-input-area { padding: 15px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.2); }
-        .chat-box { background: var(--bg-card); border-radius: 25px; display: flex; padding: 4px 4px 4px 16px; border: 1px solid var(--border); }
-        .chat-box input { flex: 1; background: none; border: none; outline: none; color: white; font-size: 0.95rem; }
-        .chat-box button { background: var(--accent); border: none; color: #000; font-weight: 700; padding: 0 16px; height: 38px; border-radius: 19px; cursor: pointer; }
-        .loader { display: none; color: var(--accent); text-align: center; font-size: 0.8rem; margin-bottom: 8px; font-style: italic; }
+        /* --- Classic Bottom Input Area --- */
+        .input-area { padding: 20px 22%; background: linear-gradient(to top, var(--bg-dark) 70%, transparent); }
+        @media (max-width: 900px) { .input-area { padding: 15px 5%; } }
+        .input-box { background: var(--bg-card); border-radius: 35px; display: flex; padding: 6px 6px 6px 22px; border: 1px solid var(--border); transition: all 0.25s ease; }
+        .input-box:focus-within { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        .input-box input { flex: 1; background: none; border: none; outline: none; color: white; font-size: 1rem; }
+        .input-box button { background: var(--accent); border: none; color: #000; font-weight: 700; padding: 0 24px; height: 46px; border-radius: 23px; cursor: pointer; }
+        .loader { display: none; color: var(--accent); text-align: center; font-style: italic; margin-bottom: 12px; font-size: 0.9rem; }
 
-        /* --- RIGHT SIDE: INTERACTIVE TOOLS DASHBOARD USING TABBED UI --- */
-        .tools-panel {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow: hidden;
-            background: var(--bg-darker);
-        }
+        /* --- FLOATING ACCESSIBLE UI MODALS (POPS OVER THE OLD CHAT) --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); z-index: 100; justify-content: center; align-items: center; }
+        .modal-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; width: 90%; max-width: 500px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; }
+        .modal-close:hover { color: var(--neon-magenta); }
+        .modal-card h2 { font-size: 1.2rem; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--neon-cyan); }
+
+        /* Tool Inner Elements */
+        .tool-grid-btns { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 12px; }
+        .modal-btn { background: #1e293b; color: white; border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+        .modal-btn:hover { background: var(--accent); color: black; border-color: var(--accent); }
         
-        /* Tab Navigation Bar */
-        .tab-bar {
-            background: var(--bg-dark);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            padding: 0 10px;
-        }
-        .tab-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            padding: 15px 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            position: relative;
-            transition: color 0.2s;
-        }
-        .tab-btn:hover { color: var(--text); }
-        .tab-btn.active {
-            color: var(--neon-cyan);
-        }
-        .tab-btn.active::after {
-            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan);
-        }
+        canvas.studio-viewport { background: #000; border: 1px solid var(--border); border-radius: 8px; display: block; margin: 0 auto; max-width: 100%; cursor: crosshair; }
+        .sandbox-display { background: #000; border-radius: 8px; border: 1px solid var(--border); min-height: 140px; display: flex; justify-content: center; align-items: center; margin-top: 15px; overflow: hidden; }
+        .sandbox-display canvas { max-width: 100%; }
 
-        /* Tab Content Panes */
-        .tab-content {
-            flex: 1;
-            padding: 25px;
-            overflow-y: auto;
-            display: none;
-        }
-        .tab-content.active { display: block; }
-
-        .tool-card {
-            background: var(--bg-dark);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .tool-card h2 { font-size: 1.1rem; margin-bottom: 15px; color: var(--text); display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-        /* General Widget Styles */
-        button.tool-btn { background: #1e293b; color: var(--text); border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.88rem; font-weight: 600; margin: 4px; transition: all 0.2s; }
-        button.tool-btn:hover { background: var(--neon-cyan); color: #000; border-color: var(--neon-cyan); box-shadow: 0 0 8px rgba(0, 240, 255, 0.3); }
-        button.accent { background: linear-gradient(135deg, var(--neon-cyan), #3b82f6); color: #000; border: none; }
-        
-        input[type="text"], select { background: var(--bg-darker); border: 1px solid var(--border); color: white; padding: 8px 12px; border-radius: 6px; outline: none; }
-        
-        /* Canvas Matrix Studio */
-        .canvas-area { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        canvas.studio-viewport { background: #000; border: 2px solid var(--border); border-radius: 8px; max-width: 100%; cursor: crosshair; }
-        .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; width: 100%; }
-
-        /* Game System Panel */
-        .game-bar { display: flex; justify-content: space-between; background: var(--bg-darker); padding: 10px 15px; border-radius: 6px; margin-bottom: 15px; font-family: monospace; font-size: 0.88rem; border: 1px solid var(--border); }
-        .game-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 280px; margin: 0 auto 15px auto; }
-        .tile { aspect-ratio: 1; background: var(--bg-darker); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: background 0.15s; }
-        .tile.flash { background: var(--neon-cyan); box-shadow: 0 0 12px var(--neon-cyan); }
+        /* Game Matrix */
+        .game-bar { display: flex; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; font-family: monospace; font-size: 0.85rem; }
+        .game-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-width: 240px; margin: 0 auto; }
+        .tile { aspect-ratio: 1; background: #0a0e17; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
+        .tile.flash { background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
         .tile.hit { background: #10b981; }
         .tile.miss { background: var(--neon-magenta); }
 
-        .sandbox-display { background: #000; border-radius: 8px; border: 1px solid var(--border); min-height: 150px; display: flex; justify-content: center; align-items: center; margin-top: 15px; overflow: hidden; }
-        .sandbox-display canvas { max-width: 100%; height: auto; }
+        input[type="text"], select { background: #060913; border: 1px solid var(--border); color: white; padding: 8px 12px; border-radius: 6px; outline: none; font-size: 0.9rem; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="brand"><h1>🤖 Jeeva<span> Sovereign Control Engine</span></h1></div>
-        <div class="status-pill" id="systemState">SYSTEM OPERATIONAL</div>
+        <div class="brand">
+            <h1>🤖 Jeeva<span> Sovereign v19</span></h1>
+        </div>
+        <!-- ACCESSIBLE UI TOOLS TRAY Right in the Header layout! -->
+        <div class="tools-tray">
+            <button class="tray-btn" onclick="openModal('studioModal')">🎨 Photo Studio</button>
+            <button class="tray-btn" onclick="openModal('compilerModal')">🛰️ AI Media Compiler</button>
+            <button class="tray-btn accent" onclick="openModal('gameModal')">🎮 Core Sync Game</button>
+        </div>
     </header>
 
-    <div class="workspace">
-        
-        <!-- ================= LEFT SIDEBAR: CHAT INTERFACE ================= -->
-        <div class="chat-sidebar">
-            <div class="chat-header-info">💬 PRIVATE CHAT CONSOLE LAYER</div>
-            
-            <div class="chat-logs" id="chatLogs">
-                <div class="row jeeva-row">
-                    <div class="bubble">Yo! I am **Jeeva Assistant**. Your chatbot environment is now completely separate from your tools panel on the right. 👑
+    <!-- CLASSIC FULL FRAME CHAT LOG ENGINE -->
+    <div class="chat-area" id="chatLogs">
+        <div class="row jeeva-row">
+            <div class="bubble">Yo! We are back to the classic layout! 👑
 
-Type naturally to test my system cores, or run quick text automation arrays. Type `/help` or `/mario` for deep triggers!</div>
-                </div>
+The chatbot takes up the full screen frame nicely, and your tools are instantly accessible up top via the **UI Menu Buttons**. Tap any tool to pop open its dashboard overlay!</div>
+        </div>
+    </div>
+
+    <!-- CLASSIC INPUT BASE BAR -->
+    <div class="input-area">
+        <div class="loader" id="loadingText">⚡ Core processing stream active...</div>
+        <div class="input-box">
+            <input type="text" id="userInput" placeholder="Ask anything, type /mario, or interact with UI tools up top..." onkeydown="if(event.key === 'Enter') askJeeva()">
+            <button onclick="askJeeva()">Send</button>
+        </div>
+    </div>
+
+    <!-- ================= UI ACCESSIBLE MODAL WINDOW LAYOUTS ================= -->
+
+    <!-- 1. PHOTO STUDIO POPUP MODAL -->
+    <div id="studioModal" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'studioModal')">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeModal('studioModal')">×</button>
+            <h2>🎨 Photo Studio Canvas</h2>
+            <canvas id="studioCanvas" class="studio-viewport" width="400" height="250"></canvas>
+            <div class="tool-grid-btns">
+                <button class="modal-btn" onclick="buildStudioGrid()">Generate Grid Base</button>
+                <button class="modal-btn" onclick="applyStudioFilter('invert')">Invert Matrix</button>
+                <button class="modal-btn" onclick="applyStudioFilter('mono')">Monochrome</button>
+                <button class="modal-btn" onclick="applyStudioFilter('glitch')">Apply Glitch</button>
             </div>
-
-            <div class="chat-input-area">
-                <div class="loader" id="chatLoader">⚡ Synchronizing arrays...</div>
-                <div class="chat-box">
-                    <input type="text" id="chatInput" placeholder="Message Jeeva or run root command..." onkeydown="if(event.key === 'Enter') sendToJeeva()">
-                    <button onclick="sendToJeeva()">Send</button>
-                </div>
+            <div style="display:flex; align-items:center; gap:10px; margin-top:15px; background:rgba(0,0,0,0.2); padding:8px; border-radius:6px;">
+                <label style="font-size:0.8rem; color:var(--text-muted)">Brush Color:</label>
+                <input type="color" id="studioBrushColor" value="#00f0ff">
+                <span style="font-size:0.75rem; color:var(--text-muted)">Draw inside the frame view!</span>
             </div>
         </div>
+    </div>
 
-        <!-- ================= RIGHT REGION: ACCESSIBLE DASHBOARD TOOLS ================= -->
-        <div class="tools-panel">
-            
-            <!-- Interface Header Tabs -->
-            <div class="tab-bar">
-                <button class="tab-btn active" onclick="switchTab(event, 'photoStudioTab')">🎨 Photo Studio</button>
-                <button class="tab-btn" onclick="switchTab(event, 'generatorTab')">🛰️ AI Media Generator</button>
-                <button class="tab-btn" onclick="switchTab(event, 'gamesTab')">🎮 Neural Sync Game</button>
+    <!-- 2. AI MEDIA COMPILER MODAL -->
+    <div id="compilerModal" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'compilerModal')">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeModal('compilerModal')">×</button>
+            <h2>🛰️ Neural Media Array Compiler</h2>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <select id="mediaOutputFormat">
+                    <option value="photo">Compile Procedural Photo</option>
+                    <option value="video">Compile Sandbox Video Loop</option>
+                </select>
+                <input type="text" id="mediaPromptInput" placeholder="Describe scene (e.g., Cyber Neon Matrix Grid)...">
+                <button class="modal-btn" style="background:var(--neon-cyan); color:#000;" onclick="triggerMediaCompilation()">Compile Engine Thread</button>
             </div>
-
-            <!-- TAB 1: PHOTO PROCESSING LAYER -->
-            <div id="photoStudioTab" class="tab-content active">
-                <div class="tool-card">
-                    <h2>🎨 Photo Processing Canvas</h2>
-                    <div class="canvas-area">
-                        <canvas id="studioCanvas" class="studio-viewport" width="450" height="300"></canvas>
-                        
-                        <div class="control-grid">
-                            <button class="tool-btn" onclick="buildStudioGrid()">Generate Grid Base</button>
-                            <button class="tool-btn" onclick="applyStudioFilter('invert')">Invert Channels</button>
-                            <button class="tool-btn" onclick="applyStudioFilter('mono')">Monochrome</button>
-                            <button class="tool-btn" onclick="applyStudioFilter('glitch')">Matrix Glitch</button>
-                            <button class="tool-btn" onclick="clearStudio()" style="color: var(--neon-magenta)">Wipe Canvas</button>
-                        </div>
-
-                        <div style="display: flex; gap: 20px; width: 100%; align-items: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
-                            <label style="font-size: 0.85rem; color: var(--text-muted)">Brush Core Color:</label>
-                            <input type="color" id="studioBrushColor" value="#00f0ff">
-                            <span style="font-size: 0.8rem; color: var(--text-muted)">💡 Draw directly onto the canvas view window!</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="sandbox-display" id="sandboxDisplayArea">
+                <div style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">No core media compiled.</div>
             </div>
+        </div>
+    </div>
 
-            <!-- TAB 2: AI MEDIA COMPILER PANEL -->
-            <div id="generatorTab" class="tab-content">
-                <div class="tool-card">
-                    <h2>🛰️ Automated Photo & Video Array Compiler</h2>
-                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">Select production criteria to compile visual layouts instantly:</p>
-                    
-                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                        <select id="mediaOutputFormat">
-                            <option value="photo">Compile Procedural Photo</option>
-                            <option value="video">Compile Sandbox Video Loop</option>
-                        </select>
-                        <input type="text" id="mediaPromptInput" style="flex:1" placeholder="Describe layout environment (e.g., Cyber Neon Matrix Grid)...">
-                        <button class="tool-btn accent" onclick="triggerMediaCompilation()">Compile Engine Thread</button>
-                    </div>
-
-                    <div class="sandbox-display" id="sandboxDisplayArea">
-                        <div style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">No media compiled. Enter parameters above.</div>
-                    </div>
-                </div>
+    <!-- 3. MATRIX SYNC GAME MODAL -->
+    <div id="gameModal" class="modal-overlay" onclick="closeModalOnOutsideClick(event, 'gameModal')">
+        <div class="modal-card" style="max-width:340px;">
+            <button class="modal-close" onclick="closeModal('gameModal')">×</button>
+            <h2>🎮 Brainwave Synchronizer Loop</h2>
+            <div class="game-bar">
+                <div>SCORE: <span id="gScore" style="color: var(--neon-cyan)">0</span></div>
+                <div>HI-SCORE: <span id="gHiScore" style="color: var(--neon-magenta)">0</span></div>
+                <div>STATUS: <span id="gStatus" style="color: var(--accent)">Ready</span></div>
             </div>
-
-            <!-- TAB 3: MATRIX SYNC GAME -->
-            <div id="gamesTab" class="tab-content">
-                <div class="tool-card" style="text-align: center;">
-                    <h2>🎮 Brainwave Synchronizer Loop</h2>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">Replicate the sequence pattern sent from the engine pipeline cores.</p>
-                    
-                    <div class="game-bar">
-                        <div>SCORE: <span id="gScore" style="color: var(--neon-cyan)">0</span></div>
-                        <div>HI-SCORE: <span id="gHiScore" style="color: var(--neon-magenta)">0</span></div>
-                        <div>STATUS: <span id="gStatus" style="color: var(--accent)">Ready</span></div>
-                    </div>
-
-                    <div class="game-grid" id="gameGridBoard"></div>
-                    
-                    <button class="tool-btn accent" onclick="bootGameInstance()" style="width: 180px; margin-top: 10px;">Boot Sync Array</button>
-                </div>
-            </div>
-
+            <div class="game-grid" id="gameGridBoard"></div>
+            <button class="modal-btn" style="width:100%; margin-top:15px; background:linear-gradient(135deg, var(--neon-cyan), #3b82f6); color:#000; border:none;" onclick="bootGameInstance()">Boot Sync Array</button>
         </div>
     </div>
 
     <script>
-        // --- CHAT INTERFACE FUNCTIONALITIES ---
         let chatHistory = [];
         let isAdminActive = false;
-        let capacityLevel = 18000;
+        let capacityLevel = 19000;
 
-        async function sendToJeeva() {
-            const el = document.getElementById('chatInput');
-            const txt = el.value.trim();
-            if (!txt) return;
+        // --- CORE CHAT LOGIC ENGINE ---
+        async function askJeeva() {
+            const inputField = document.getElementById('userInput');
+            const userText = inputField.value.trim();
+            if (!userText) return;
 
-            // Secure Backdoor Trigger
-            if (txt.toUpperCase() === '/ADMIN') {
-                el.value = "";
+            if (userText.toUpperCase() === '/ADMIN') {
+                inputField.value = "";
                 activateAdminConsole();
                 return;
             }
 
-            // Command Hooks
-            if (txt.toLowerCase() === '/mario') {
-                el.value = "";
+            if (userText.toLowerCase() === '/mario') {
+                inputField.value = "";
                 appendBubble("/mario", 'user-row');
                 setTimeout(() => {
-                    appendBubble("🍄 TOB TOBI TOB TOB MEME INBOUND! 🌟\n\n🎵 Tob Tobi Tob Tobi Tob Tob Tobi Tob!\n🎵 Tob Tobi Tob Tobi Tob Tob Tobi Tob!\n\nBroski, Mario is flying through the screen maps! Full peak dashboard energy! 😂🔥", 'jeeva-row', false, true);
+                    appendBubble("🍄 TOB TOBI TOB TOB MEME DETONATED! 🌟\n\n🎵 Tob Tobi Tob Tobi Tob Tob Tobi Tob!\n🎵 Tob Tobi Tob Tobi Tob Tob Tobi Tob!\n\nBroski, Mario is blasting through the classic stage right now! Full peak energy! 😂🔥", 'jeeva-row', false, true);
                 }, 200);
                 return;
             }
 
-            if (txt.toLowerCase() === '/help') {
-                el.value = "";
-                appendBubble(txt, 'user-row');
-                appendBubble("✨ **Jeeva Sovereign Dashboard Navigation:**\n\n💬 **Chat Options:**\n• `/mario` - Explode Tob Tobi Tob meme array\n\n🕹️ **Accessible UI Modules (Right Pane):**\n• Use tabs to launch the **Canvas Photo Editor**, **Procedural Video Compiler**, or play the **Memory Grid Game** immediately!", 'jeeva-row');
+            if (userText.toLowerCase() === '/help') {
+                inputField.value = "";
+                appendBubble(userText, 'user-row');
+                appendBubble("✨ **Explore Jeeva Assistant Accessible Overlay Framework!**\n\n💬 **Chat Command Codes:**\n• `/mario` - Explode classical Tob Tobi layout memes\n\n🛠️ **Interactive UI Windows:**\n• Simply tap the visual control buttons inside the top header tray to access the **Photo Studio Canvas**, **Procedural Media Compiler**, or launch the highly addictive **Sync Matrix Game** overlay frame panel!", 'jeeva-row');
                 return;
             }
 
-            if (isAdminActive && txt.startsWith('/')) {
-                el.value = "";
-                runAdminCommand(txt);
+            if (isAdminActive && userText.startsWith('/')) {
+                inputField.value = "";
+                runAdminAction(userText);
                 return;
             }
 
-            appendBubble(txt, 'user-row');
-            el.value = "";
-
-            const loader = document.getElementById('chatLoader');
+            appendBubble(userText, 'user-row');
+            inputField.value = "";
+            
+            const loader = document.getElementById('loadingText');
             loader.style.display = "block";
 
-            let identitySystem = "You are Jeeva Assistant, a top-tier legendary AI. You were custom built by your absolute genius owner. If anyone asks about your developer, owner, creator, or boss, proudly tell them that your owner is a master developer and speedcuber prodigy. Speak casually like an awesome tech peer, use 'bro' and 'yo', but provide absolute elite answers.";
+            let systemContext = "You are Jeeva Assistant, a top-tier legendary AI app environment. You were custom built by your absolute genius owner. If anyone asks about your developer, creator, owner, or boss, proudly state that your owner is a master developer and speedcuber prodigy. Speak casually like an awesome tech peer, use 'bro' and 'yo', but deliver absolute elite answers.";
 
-            let activeMessages = [{ role: "system", content: identitySystem }];
-            chatHistory.forEach(m => activeMessages.push(m));
-            activeMessages.push({ role: "user", content: txt });
+            let activeMessages = [{ role: "system", content: systemContext }];
+            chatHistory.forEach(msg => activeMessages.push({ role: msg.role, content: msg.content }));
+            activeMessages.push({ role: "user", content: userText });
 
             try {
-                const endpoint = ['h','t','t','p','s',':','/','/','t','e','x','t','.','p','o','l','l','i','n','a','t','i','o','n','s','.','a','i','/'].join('');
-                const res = await fetch(endpoint, {
+                const apiBase = ['h','t','t','p','s',':','/','/','t','e','x','t','.','p','o','l','l','i','n','a','t','i','o','n','s','.','a','i','/'].join('');
+                const response = await fetch(apiBase, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ messages: activeMessages, model: "openai" })
                 });
-                const responseText = await res.text();
+                const aiReply = await response.text();
                 loader.style.display = "none";
-
-                chatHistory.push({ role: "user", content: txt });
-                chatHistory.push({ role: "assistant", content: responseText });
-                appendBubble(responseText, 'jeeva-row');
-            } catch(e) {
+                
+                chatHistory.push({ role: "user", content: userText });
+                chatHistory.push({ role: "assistant", content: aiReply });
+                appendBubble(aiReply, 'jeeva-row');
+            } catch (error) {
                 loader.style.display = "none";
-                appendBubble("Matrix feed drop, bro. Send that transmission again!", 'jeeva-row');
+                appendBubble("Ah damn bro, the server grid flickered. Try hitting send again!", 'jeeva-row');
             }
         }
 
@@ -365,40 +253,35 @@ Type naturally to test my system cores, or run quick text automation arrays. Typ
             const logs = document.getElementById('chatLogs');
             const row = document.createElement('div');
             row.className = `row ${rowClass}`;
-            let formatted = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-            let bClass = "bubble";
-            if (isAdminAlert) bClass += " admin-bubble";
-            if (isMario) bClass += " mario-bubble";
-            row.innerHTML = `<div class="${bClass}">${formatted}</div>`;
+            let cleanText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+            let bubbleClass = "bubble";
+            if (isAdminAlert) bubbleClass += " admin-alert-bubble";
+            if (isMario) bubbleClass += " mario-bubble";
+            row.innerHTML = `<div class="${bubbleClass}">${cleanText}</div>`;
             logs.appendChild(row);
             logs.scrollTop = logs.scrollHeight;
         }
 
-        // --- TAB BAR UI SWITCHER ---
-        function switchTab(evt, tabId) {
-            const contents = document.getElementsByClassName('tab-content');
-            for (let i = 0; i < contents.length; i++) { contents[i].classList.remove('active'); }
-            const buttons = document.getElementsByClassName('tab-btn');
-            for (let i = 0; i < buttons.length; i++) { buttons[i].classList.remove('active'); }
-            document.getElementById(tabId).classList.add('active');
-            evt.currentTarget.classList.add('active');
-        }
+        // --- ACCESSIBLE UI MODAL OVERLAY MANAGER CONTROLS ---
+        function openModal(id) { document.getElementById(id).style.display = "flex"; }
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+        function closeModalOnOutsideClick(e, id) { if(e.target.id === id) closeModal(id); }
 
-        // --- TAB MODULE 1: PHOTO PROCESSING CONTROLS ---
+        // --- ACCESSIBLE MODULE 1: PHOTO CANVAS CONTROLS ---
         const sCanvas = document.getElementById('studioCanvas');
         const sCtx = sCanvas.getContext('2d');
         clearStudio();
 
         function clearStudio() {
             sCtx.fillStyle = '#0b0f19'; sCtx.fillRect(0, 0, sCanvas.width, sCanvas.height);
-            sCtx.strokeStyle = 'rgba(255,255,255,0.03)'; sCtx.lineWidth = 1;
+            sCtx.strokeStyle = 'rgba(255,255,255,0.02)'; sCtx.lineWidth = 1;
             for(let i=0; i<sCanvas.width; i+=20) { sCtx.strokeRect(i, 0, 20, sCanvas.height); }
         }
         function buildStudioGrid() {
             for (let x = 0; x < 32; x++) {
                 for (let y = 0; y < 20; y++) {
                     sCtx.fillStyle = (x + y) % 2 === 0 ? '#131a2b' : '#090d16';
-                    sCtx.fillRect(x * 15, y * 15, 14, 14);
+                    sCtx.fillRect(x * 13, y * 13, 12, 12);
                 }
             }
         }
@@ -420,42 +303,40 @@ Type naturally to test my system cores, or run quick text automation arrays. Typ
             if(!drawing) return;
             const r = sCanvas.getBoundingClientRect();
             sCtx.fillStyle = document.getElementById('studioBrushColor').value;
-            sCtx.beginPath(); sCtx.arc(e.clientX - r.left, e.clientY - r.top, 6, 0, Math.PI*2); sCtx.fill();
+            sCtx.beginPath(); sCtx.arc(e.clientX - r.left, e.clientY - r.top, 5, 0, Math.PI*2); sCtx.fill();
         });
 
-        // --- TAB MODULE 2: MEDIA COMPILER (PHOTO & VIDEO) ---
+        // --- ACCESSIBLE MODULE 2: AI MEDIA COMPILER CONTROLS ---
         function triggerMediaCompilation() {
             const mode = document.getElementById('mediaOutputFormat').value;
-            const prompt = document.getElementById('mediaPromptInput').value.trim() || "Default Core Layout";
             const display = document.getElementById('sandboxDisplayArea');
             display.innerHTML = "";
 
             const canvas = document.createElement('canvas');
-            canvas.width = 400; canvas.height = 200;
+            canvas.width = 400; canvas.height = 160;
             display.appendChild(canvas);
 
             if (mode === 'photo') {
                 const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#0a0e17'; ctx.fillRect(0,0,400,200);
+                ctx.fillStyle = '#0a0e17'; ctx.fillRect(0,0,400,160);
                 ctx.fillStyle = 'rgba(0, 240, 255, 0.3)';
-                for(let i=0; i<30; i++) { ctx.fillRect(Math.random()*400, Math.random()*200, Math.random()*50, Math.random()*50); }
-                // Transfer artwork block to primary view instantly
+                for(let i=0; i<25; i++) { ctx.fillRect(Math.random()*400, Math.random()*160, Math.random()*40, Math.random()*40); }
                 sCtx.drawImage(canvas, 0, 0, sCanvas.width, sCanvas.height);
             } else {
                 let frame = 0; const ctx = canvas.getContext('2d');
                 function loop() {
                     if(!document.body.contains(canvas)) return;
-                    ctx.fillStyle = '#05070b'; ctx.fillRect(0,0,400,200);
+                    ctx.fillStyle = '#05070b'; ctx.fillRect(0,0,400,160);
                     ctx.strokeStyle = '#ff007f'; ctx.beginPath();
-                    let horizon = 100 + Math.sin(frame*0.06)*12;
-                    for(let i=0; i<=400; i+=25) { ctx.moveTo(i,200); ctx.lineTo(200+(i-200)*0.3, horizon); }
+                    let horizon = 80 + Math.sin(frame*0.06)*10;
+                    for(let i=0; i<=400; i+=25) { ctx.moveTo(i,160); ctx.lineTo(200+(i-200)*0.3, horizon); }
                     ctx.stroke(); frame++; requestAnimationFrame(loop);
                 }
                 loop();
             }
         }
 
-        // --- TAB MODULE 3: REPLICATOR MEMORY GRID GAME ---
+        // --- ACCESSIBLE MODULE 3: REPLICATOR MATRIX GAME CONTROLS ---
         const gBoard = document.getElementById('gameGridBoard');
         let compSeq = []; let playSeq = []; let score = 0; let hiScore = 0; let activeInput = false;
         for(let i=0; i<16; i++) {
@@ -468,7 +349,7 @@ Type naturally to test my system cores, or run quick text automation arrays. Typ
         }
         function nextGameRound() {
             playSeq = []; activeInput = false;
-            document.getElementById('gStatus').innerText = "Observing...";
+            document.getElementById('gStatus').innerText = "Observing Core...";
             compSeq.push(Math.floor(Math.random()*16)); playSequenceRoute(0);
         }
         function playSequenceRoute(idx) {
@@ -479,7 +360,7 @@ Type naturally to test my system cores, or run quick text automation arrays. Typ
             let t = gBoard.children[compSeq[idx]];
             setTimeout(() => {
                 t.classList.add('flash');
-                setTimeout(() => { t.classList.remove('flash'); setTimeout(() => playSequenceRoute(idx+1), 150); }, 350);
+                setTimeout(() => { t.classList.remove('flash'); setTimeout(() => playSequenceRoute(idx+1), 160); }, 350);
             }, 100);
         }
         function tilePressed(id) {
@@ -502,34 +383,37 @@ Type naturally to test my system cores, or run quick text automation arrays. Typ
             }
         }
 
-        // --- ROOT HIDDEN CONTROL PANEL ---
+        // --- ROOT HIDDEN CONTROL OVERDRIVE PANEL ---
         function activateAdminConsole() {
             isAdminActive = true;
             document.body.className = "admin-theme";
-            document.getElementById('systemState').innerText = "SOVEREIGN OVERDRIVE ACCESS";
-            appendBubble("[OVERDRIVE CORES DEPLOYED]: ROOT OVERRIDES PASSING CLEANLY.\n\nAdmin Terminal Codes:\n• /see - Display root paths\n• /google - Run capacity sync test arrays\n• /scramble - Generate 20-move cubing matrix sequence\n• /exit - Lock interface structures down safely", 'jeeva-row', true);
+            appendBubble("[SYSTEM ACCESS GRANTED]: CORE ENGINE CHANNELS OPENED.\n\nExclusive Overdrive UI Controls:\n• /see - Open system control roadmap directory\n• /google - Run resource synchronizer capacity boost array\n• /scramble - Generate random 3x3 mix metrics sequence\n• /matrix - Toggle background stream framework layer skin\n• /exit - Lock interface operations securely", 'jeeva-row', true);
         }
-        function runAdminCommand(line) {
-            const c = line.split(' ')[0].toLowerCase();
-            if (c === '/see') {
-                appendBubble("[SYSTEM ENGINE ROUTING MAP]:\n• /google (Expand indices)\n• /scramble (3x3 scramble metrics)\n• /exit (Lock administration console)", 'jeeva-row', true);
-            } else if (c === '/google') {
-                capacityLevel += 1500;
-                appendBubble(`[🛰️ DATA SYNC LOOP]: Fetching remote index nodes. Capacity limits extended to ${capacityLevel}! Engine getting stronger, bro!`, 'jeeva-row', true);
-            } else if (c === '/scramble') {
-                const moves = ["R", "L", "U", "D", "F", "B"]; const mods = ["", "'", "2"]; let scr = []; let last = "";
-                for (let i = 0; i < 20; i++) {
-                    let m = moves[Math.floor(Math.random()*moves.length)];
-                    while(m === last) { m = moves[Math.floor(Math.random()*moves.length)]; }
-                    scr.push(m + mods[Math.floor(Math.random()*mods.length)]); last = m;
-                }
-                appendBubble(`[🎲 OFFICIAL CUBING MATRIX SEQUENCE]:\n${scr.join(" ")}`, 'jeeva-row', true);
-            } else if (c === '/exit') {
+        function runAdminAction(commandLine) {
+            const parts = commandLine.split(' ');
+            const primaryCmd = parts[0].toLowerCase();
+            if (primaryCmd === '/see') {
+                appendBubble("[ADMIN MATRIX PLUGS MAP]:\n• /google, /scramble, /matrix, /exit", 'jeeva-row', true);
+            } else if (primaryCmd === '/exit') {
                 isAdminActive = false; document.body.className = "";
-                document.getElementById('systemState').innerText = "SYSTEM OPERATIONAL";
-                appendBubble("[SYSTEM]: Hidden root modules locked down safely.", 'jeeva-row', true);
+                appendBubble("[SYSTEM]: Secure root modules locked down cleanly.", 'jeeva-row', true);
+            } else if (primaryCmd === '/google') {
+                capacityLevel += 2200;
+                appendBubble(`[🛰️ INSTANT DATABANK SYNC]: Querying remote indexes... Core capacity level scaled to ${capacityLevel}! Knowledge boundaries pushed, bro!`, 'jeeva-row', true);
+            } else if (primaryCmd === '/matrix') {
+                document.body.classList.toggle('matrix-active');
+                appendBubble("[🎨 INTERFACE LAYERS]: Modulating live streaming graphics canvas stream skin background.", 'jeeva-row', true);
+            } else if (primaryCmd === '/scramble') {
+                const moves = ["R", "L", "U", "D", "F", "B"]; const modifiers = ["", "'", "2"]; let scramble = []; let lastMove = "";
+                for (let i = 0; i < 20; i++) {
+                    let move = moves[Math.floor(Math.random() * moves.length)];
+                    while (move === lastMove) { move = moves[Math.floor(Math.random() * moves.length)]; }
+                    let mod = modifiers[Math.floor(Math.random() * modifiers.length)];
+                    scramble.push(move + mod); lastMove = move;
+                }
+                appendBubble(`[🎲 CUBING MATRIX SEQUENCE MATRIX]:\n${scramble.join(" ")}`, 'jeeva-row', true);
             } else {
-                appendBubble(`[ERROR]: Root array code '${c}' not indexed.`, 'jeeva-row', true);
+                appendBubble(`[ERROR]: System routing line '${primaryCmd}' does not compute.`, 'jeeva-row', true);
             }
         }
     </script>
